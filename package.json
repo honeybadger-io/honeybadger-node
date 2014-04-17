@@ -1,0 +1,27 @@
+{
+  "name": "node-honeybadger",
+  "version": "0.1.0",
+  "description": "A node.js notifier for honeybadger.io",
+  "main": "lib/honeybadger.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "request": "~2.34.0",
+    "stack-trace": "~0.0.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AvianFlu/node-honeybadger.git"
+  },
+  "author": "AvianFlu <charlie@charlieistheman.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AvianFlu/node-honeybadger/issues"
+  },
+  "homepage": "https://github.com/AvianFlu/node-honeybadger"
+}
