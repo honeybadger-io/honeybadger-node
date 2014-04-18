@@ -15,7 +15,7 @@ var Badger = require('node-honeybadger');
 
 var hb = new Badger({
   apiKey: 'your api key goes here',
-  server { hostname: 'steve', otherMetadata: 'goes here' },
+  server: { hostname: 'steve', otherMetadata: 'goes here' },
   // Any object with info, warn, and error methods can be used as the logger.
   // If nothing is provided, nothing will be logged.
   logger: console
