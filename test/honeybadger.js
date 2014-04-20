@@ -4,11 +4,11 @@ var assert = require('assert'),
     Badger = require('../lib/honeybadger');
 
 suite('node.js honeybadger.io notifier', function () {
-  var hb1, hb2, payloads = [];
+  var hb1, hb2, payloads = [], payloadCount = 0;
 
   setup(function () {
     // Don't send actual requests to honeybadger.io from the test suite
-    Badger.prototype._write = function (data) { payloads.push(data); };
+    Badger.prototype._post = function (data) { payloads.push(data); };
   });
 
   suite('Creating a Badger without an API key', function () {
@@ -17,10 +17,14 @@ suite('node.js honeybadger.io notifier', function () {
       server: { testmeta: 'data' }
     });
 
-    test('makes it a no-op when used', function () {
-      var l = payloads.length;
+    setup(function (done) {
+      payloadCount = payloads.length;
       hb.send(new Error('test error 1'));
-      assert(payloads.length === l, 'Payload was sent without API key');
+      setImmediate(done);
+    });
+
+    test('makes it a no-op when used', function () {
+      assert(payloads.length === payloadCount, 'Payload was sent without API key');
     });
   });
 
@@ -35,10 +39,15 @@ suite('node.js honeybadger.io notifier', function () {
       },
     });
 
-    test('successfully sends the payload', function () {
-      var p, l = payloads.length;
+    setup(function (done) {
+      payloadCount = payloads.length;
       hb.send(new Error('test error 2'));
-      assert(payloads.length === (l + 1), 'payload not sent');
+      setImmediate(done);
+    });
+
+    test('successfully sends the payload', function () {
+      var p;
+      assert(payloads.length === (payloadCount + 1), 'payload not sent');
       p = payloads[payloads.length - 1];
       assert(p.error.message = 'test error 2', 'payload incorrect');
     });
@@ -61,10 +70,15 @@ suite('node.js honeybadger.io notifier', function () {
       }
     });
 
-    test('successfully sends the payload', function () {
-      var p, l = payloads.length;
+    setup(function (done) {
+      payloadCount = payloads.length;
       hb.send(new Error('test error 3'));
-      assert(payloads.length === (l + 1), 'payload not sent');
+      setImmediate(done);
+    });
+
+    test('successfully sends the payload', function () {
+      var p;
+      assert(payloads.length === (payloadCount + 1), 'payload not sent');
       p = payloads[payloads.length - 1];
       assert(p.error.message === 'test error 3', 'payload incorrect');
     });
@@ -98,10 +112,15 @@ suite('node.js honeybadger.io notifier', function () {
       }
     };
 
-    test('successfully sends the payload', function () {
-      var p, l = payloads.length;
+    setup(function (done) {
+      payloadCount = payloads.length;
       hb.send(new Error('test error 4'), meta);
-      assert(payloads.length === (l + 1), 'payload not sent');
+      setImmediate(done);
+    });
+
+    test('successfully sends the payload', function () {
+      var p;
+      assert(payloads.length === (payloadCount + 1), 'payload not sent');
       p = payloads[payloads.length - 1];
       assert(p.error.message === 'test error 4', 'payload incorrect');
     });
