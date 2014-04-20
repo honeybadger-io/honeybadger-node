@@ -33,10 +33,17 @@ hb.send(err, {
   },
   session: {},
   cookies: {},
-  params: {}
+  params: {},
+  cgi_data: req.headers
 });
 
 ```
+
+The `cgi_data` metadata field is important - this is what populates the
+"Environment" section of the Honeybadger error UI.  It usually contains HTTP
+headers and other server info, in the Ruby frameworks that Honeybadger mainly
+supports - since there is no sensible default in node for this, populating this
+field effectively is left as an exercise to the user.
 
 `node-honeybadger` is also a Writable Stream.
 
