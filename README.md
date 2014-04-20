@@ -45,14 +45,7 @@ headers and other server info, in the Ruby frameworks that Honeybadger mainly
 supports - since there is no sensible default in node for this, populating this
 field effectively is left as an exercise to the user.
 
-`node-honeybadger` is also a Writable Stream.
+Prior to version 0.4.0, `node-honeybadger` was a Writable Stream.  This
+interface has been removed, since it was only wishful thinking in the first
+place, and did not make a lot of sense in practice.
 
-```js
-var payload = hb.makePayload(err, meta);
-hb.write(payload);
-
-// Or...
-
-yourPayloadStream.pipe(hb);
-
-```
