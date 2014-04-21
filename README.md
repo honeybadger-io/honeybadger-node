@@ -47,6 +47,15 @@ headers and other server info, in the Ruby frameworks that Honeybadger mainly
 supports - since there is no sensible default in node for this, populating this
 field effectively is left as an exercise to the user.
 
+Instances of `node-honeybadger` can also emit the following events:
+ - `sent`: This is emitted when honeybadger.io returns a 201 successfully. The
+   response body, containing metadata about the submitted error, is emitted as
+data.
+ - `error`: Emitted in the case of local node errors while trying to connect to
+   honeybadger.io.  *Will not be emitted unless a listener is present*.
+ - `remoteError`: Emitted when a non-201 status code is returned by
+   honeybadger.io.  Emits the response body, if one is present.
+
 Prior to version 0.4.0, `node-honeybadger` was a Writable Stream.  This
 interface has been removed, since it was only wishful thinking in the first
 place, and did not make a lot of sense in practice.
