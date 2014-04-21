@@ -4,52 +4,56 @@ var assert = require('assert'),
     Badger = require('../lib/honeybadger');
 
 suite('node.js honeybadger.io notifier', function () {
-  var hb1, hb2, payloads = [], payloadCount = 0;
+  var payloads = [], payloadCount;
 
   setup(function () {
     // Don't send actual requests to honeybadger.io from the test suite
-    Badger.prototype._post = function (data) { payloads.push(data); };
+    Badger.prototype._post = function (data) {
+      payloads.push(data);
+      setImmediate(this.emit.bind(this, 'sent', {}));
+    };
   });
 
   suite('Creating a Badger without an API key', function () {
     var hb = new Badger({
-      apiKey: null,
-      server: { testmeta: 'data' }
-    });
+          apiKey: null,
+          server: { testmeta: 'data' }
+        }),
+        payloadCount = payloads.length;
 
-    setup(function (done) {
-      payloadCount = payloads.length;
+    test('makes it a no-op when used', function (done) {
+      hb.once('sent', function () {
+        throw new Error('This event should not fire!');
+      });
       hb.send(new Error('test error 1'));
-      setImmediate(done);
-    });
-
-    test('makes it a no-op when used', function () {
-      assert(payloads.length === payloadCount, 'Payload was sent without API key');
+      setTimeout(function () {
+        assert(payloads.length === payloadCount, 'Payload was sent without API key');
+        done();
+      }, 10);
     });
   });
 
   suite('Creating a Badger with server metadata', function () {
     var hb = new Badger({
-      // Because we've mocked the POST, the API key here only needs to be
-      // non-falsy.
-      apiKey: 'fake api key',
-      server: {
-        name: 'honeybadge',
-        role: 'testing'
-      },
-    });
+          // Because we've mocked the POST, the API key here only needs to be
+          // non-falsy.
+          apiKey: 'fake api key',
+          server: {
+            name: 'honeybadge',
+            role: 'testing'
+          },
+        });
 
-    setup(function (done) {
+    test('successfully sends the payload', function (done) {
       payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message = 'test error 2', 'payload incorrect');
+        done();
+      });
       hb.send(new Error('test error 2'));
-      setImmediate(done);
-    });
-
-    test('successfully sends the payload', function () {
-      var p;
-      assert(payloads.length === (payloadCount + 1), 'payload not sent');
-      p = payloads[payloads.length - 1];
-      assert(p.error.message = 'test error 2', 'payload incorrect');
     });
 
     test('the server metadata is added to the payload', function () {
@@ -70,17 +74,16 @@ suite('node.js honeybadger.io notifier', function () {
       }
     });
 
-    setup(function (done) {
+    test('successfully sends the payload', function (done) {
       payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error 3', 'payload incorrect');
+        done();
+      });
       hb.send(new Error('test error 3'));
-      setImmediate(done);
-    });
-
-    test('successfully sends the payload', function () {
-      var p;
-      assert(payloads.length === (payloadCount + 1), 'payload not sent');
-      p = payloads[payloads.length - 1];
-      assert(p.error.message === 'test error 3', 'payload incorrect');
     });
     
     test('correctly sets the notifier field in the payload', function () {
@@ -112,17 +115,16 @@ suite('node.js honeybadger.io notifier', function () {
       }
     };
 
-    setup(function (done) {
+    test('successfully sends the payload', function (done) {
       payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error 4', 'payload incorrect');
+        done();
+      });
       hb.send(new Error('test error 4'), meta);
-      setImmediate(done);
-    });
-
-    test('successfully sends the payload', function () {
-      var p;
-      assert(payloads.length === (payloadCount + 1), 'payload not sent');
-      p = payloads[payloads.length - 1];
-      assert(p.error.message === 'test error 4', 'payload incorrect');
     });
 
     test('The contextual metadata is passed correctly', function () {
