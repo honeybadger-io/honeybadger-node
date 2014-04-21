@@ -1,6 +1,8 @@
 node-honeybadger
 ================
 
+[![Build Status](https://secure.travis-ci.org/AvianFlu/node-honeybadger.png)](http://travis-ci.org/AvianFlu/node-honeybadger)
+
 `node-honeybadger` is a node.js module for sending errors and related metadata to
 [honeybadger.io](http://honeybadger.io).
 
