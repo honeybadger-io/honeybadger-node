@@ -1,9 +1,9 @@
-node-honeybadger
+honeybadger-node
 ================
 
-[![Build Status](https://secure.travis-ci.org/AvianFlu/node-honeybadger.png)](http://travis-ci.org/AvianFlu/node-honeybadger)
+[![Build Status](https://travis-ci.org/honeybadger-io/honeybadger-node.svg?branch=master)](https://travis-ci.org/honeybadger-io/honeybadger-node)
 
-`node-honeybadger` is a node.js module for sending errors and related metadata to
+`honeybadger-node` is a node.js module for sending errors and related metadata to
 [honeybadger.io](http://honeybadger.io).
 
 It is small, lightweight, and uses the `stack-trace` module to give honeybadger
@@ -13,7 +13,7 @@ properly in the honeybadger UI.
 Usage is simple:
 
 ```js
-var Badger = require('node-honeybadger');
+var Badger = require('honeybadger');
 
 var hb = new Badger({
   apiKey: 'your api key goes here',
@@ -47,7 +47,7 @@ headers and other server info, in the Ruby frameworks that Honeybadger mainly
 supports - since there is no sensible default in node for this, populating this
 field effectively is left as an exercise to the user.
 
-Instances of `node-honeybadger` can also emit the following events:
+Instances of `honeybadger-node` can also emit the following events:
  - `sent`: This is emitted when honeybadger.io returns a 201 successfully. The
    response body, containing metadata about the submitted error, is emitted as
 data.
@@ -56,7 +56,7 @@ data.
  - `remoteError`: Emitted when a non-201 status code is returned by
    honeybadger.io.  Emits the response body, if one is present.
 
-Prior to version 0.4.0, `node-honeybadger` was a Writable Stream.  This
+Prior to version 0.4.0, `honeybadger-node` was a Writable Stream.  This
 interface has been removed, since it was only wishful thinking in the first
 place, and did not make a lot of sense in practice.
 

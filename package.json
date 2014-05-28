@@ -1,6 +1,6 @@
 {
-  "name": "node-honeybadger",
-  "version": "0.5.0",
+  "name": "honeybadger",
+  "version": "0.6.0",
   "description": "A node.js notifier for honeybadger.io",
   "main": "lib/honeybadger.js",
   "directories": {
@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/AvianFlu/node-honeybadger.git"
+    "url": "git://github.com/honeybadger-io/honeybadger-node.git"
   },
   "author": "AvianFlu <charlie@charlieistheman.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AvianFlu/node-honeybadger/issues"
+    "url": "https://github.com/honeybadger-io/honeybadger-node/issues"
   },
-  "homepage": "https://github.com/AvianFlu/node-honeybadger"
+  "homepage": "https://github.com/honeybadger-io/honeybadger-node"
 }
