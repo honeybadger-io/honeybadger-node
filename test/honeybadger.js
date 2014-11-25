@@ -132,4 +132,115 @@ suite('node.js honeybadger.io notifier', function () {
       assert.deepEqual(p.request, meta, 'Metadata incorrect');
     });
   });
+
+  suite('Creating a Badger with cgi_data meta', function () {
+    var hb = new Badger({
+      apiKey: 'fake api key',
+      server: { name: 'honeybadger' }
+    });
+
+    var sampleCGIData = {
+      'server-software': 'Whatever server',
+      'custom': 'custom fields with custom DATA, !#&*'
+    };
+
+    test('successfully sends the payload', function (done) {
+      payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error 5', 'payload incorrect');
+        done();
+      });
+      hb.send(new Error('test error 5'), { cgi_data: sampleCGIData });
+    });
+
+    test('transforms data keys according to the RFC 3875', function () {
+      var n;
+      n = payloads[payloads.length - 1].request.cgi_data;
+      assert(n['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
+      assert(n['CUSTOM'] === sampleCGIData['custom'], 'custom not set');
+      assert(('custom' in n) === false, 'untransformed keys present in payload');
+    });
+  });
+
+  suite('Creating a Badger with headers meta', function () {
+    var hb = new Badger({
+      apiKey: 'fake api key',
+      server: { name: 'honeybadger' }
+    });
+
+    var sampleHeaders = {
+      'x-forwarded-for': '1.2.3.4',
+      'user-agent': 'Mozilla 5.0',
+      'cookie': 'a=b'
+    };
+
+    test('successfully sends the payload', function (done) {
+      payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error 6', 'payload incorrect');
+        done();
+      });
+      hb.send(new Error('test error 6'), { headers: sampleHeaders });
+    });
+
+    test('correctly sets the headers field in the payload', function () {
+      var n;
+      n = payloads[payloads.length - 1].request;
+      assert(n.cgi_data['HTTP_X_FORWARDED_FOR'] === sampleHeaders['x-forwarded-for'], 'x-forwarded-for not set');
+      assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
+      assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
+      assert(('headers' in n) === false, 'headers field is not removed from the payload');
+    });
+  });
+
+  suite('Creating a Badger with both cgi_data and headers meta', function () {
+    var hb = new Badger({
+      apiKey: 'fake api key',
+      server: { name: 'honeybadger' }
+    });
+
+    var sampleCGIData = {
+      'server-software': 'Whatever server',
+      'custom': 'custom fields with custom DATA, !#&*'
+    };
+
+    var sampleHeaders = {
+      'user-agent': 'Mozilla 5.0',
+      'cookie': 'a=b'
+    };
+
+    test('successfully sends the payload', function (done) {
+      payloadCount = payloads.length;
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error 6', 'payload incorrect');
+        done();
+      });
+      hb.send(new Error('test error 6'), {
+        headers: sampleHeaders,
+        cgi_data: sampleCGIData
+      });
+    });
+
+    test('resultig payload has combined data from headers and cgi_data', function () {
+      var n;
+      n = payloads[payloads.length - 1].request;
+      assert(n.cgi_data['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
+      assert(n.cgi_data['CUSTOM'] === sampleCGIData['custom'], 'custom  not set');
+      assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
+      assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
+      assert(('custom' in n) === false, 'untransformed keys from cgi_data present in payload');
+      assert(('user-agent' in n) === false, 'untransformed keys from headers present in payload');
+      assert(('headers' in n) === false, 'headers field is not removed from the payload');
+    });
+  });
+
 });
