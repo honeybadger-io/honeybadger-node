@@ -34,9 +34,11 @@ hb.send(err, {
     email: 'a@b.net'
   },
   session: {},
-  cookies: {},
+  headers: req.headers,
   params: {},
-  cgi_data: req.headers
+  cgi_data: {
+    'server-software': 'Node ' + process.version
+  }
 });
 
 ```
