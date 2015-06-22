@@ -243,4 +243,48 @@ suite('node.js honeybadger.io notifier', function () {
     });
   });
 
+  suite('Creating a Badger with a project root', function () {
+    suite('Inside project root', function () {
+      var hb = new Badger({ apiKey: 'fake api key' });
+      var makePayload;
+
+      beforeEach(function() {
+        payloadCount = payloads.length;
+      });
+
+      test('substitutes lines under project root', function (done) {
+        hb.once('sent', function () {
+          var p;
+          assert(payloads.length === (payloadCount + 1), 'payload not sent');
+          p = payloads[payloads.length - 1];
+          assert(p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project root not substituted: ' + p.error.backtrace[0].file);
+          done();
+        });
+        var err = new Error('Testing');
+        hb.send(err);
+      });
+    });
+
+    suite('Outside project root', function () {
+      var hb = new Badger({
+        apiKey: 'fake api key',
+        server: {
+          project_root: '/path/to/badgers'
+        }
+      });
+
+      test('does not substitute outside lines', function (done) {
+        hb.once('sent', function () {
+          var p;
+          assert(payloads.length === (payloadCount + 1), 'payload not sent');
+          p = payloads[payloads.length - 1];
+          assert(!p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project should not be substituted: ' + p.error.backtrace[0].file);
+          done();
+        });
+        var err = new Error('Testing');
+        hb.send(err);
+      });
+    });
+  });
+
 });
