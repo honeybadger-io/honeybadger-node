@@ -243,21 +243,39 @@ suite('node.js honeybadger.io notifier', function () {
     });
   });
 
-  suite('Creating a Badger with a project root', function () {
+  suite('Stack trace filters', function () {
+    var makePayload;
+
+    beforeEach(function() {
+      payloadCount = payloads.length;
+    });
+
+    suite('Node modules', function () {
+      var hb = new Badger({ apiKey: 'fake api key' });
+
+      test('always substitutes node modules', function (done) {
+        hb.once('sent', function () {
+          var p;
+          assert(payloads.length === (payloadCount + 1), 'payload not sent');
+          p = payloads[payloads.length - 1];
+          assert(p.error.backtrace[1].file.match(/^\[NODE_MODULES\]/), 'node modules not substituted: ' + p.error.backtrace[1].file);
+          done();
+        });
+        var err = new Error('Testing');
+        hb.send(err);
+      });
+    });
+
     suite('Inside project root', function () {
       var hb = new Badger({ apiKey: 'fake api key' });
-      var makePayload;
 
-      beforeEach(function() {
-        payloadCount = payloads.length;
-      });
-
-      test('substitutes lines under project root', function (done) {
+      test('substitutes files under project root', function (done) {
         hb.once('sent', function () {
           var p;
           assert(payloads.length === (payloadCount + 1), 'payload not sent');
           p = payloads[payloads.length - 1];
           assert(p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project root not substituted: ' + p.error.backtrace[0].file);
+          assert(p.error.backtrace[1].file.match(/^\[NODE_MODULES\]/), 'node modules not substituted: ' + p.error.backtrace[1].file);
           done();
         });
         var err = new Error('Testing');
@@ -273,7 +291,7 @@ suite('node.js honeybadger.io notifier', function () {
         }
       });
 
-      test('does not substitute outside lines', function (done) {
+      test('does not substitute outside files', function (done) {
         hb.once('sent', function () {
           var p;
           assert(payloads.length === (payloadCount + 1), 'payload not sent');
