@@ -85,7 +85,7 @@ suite('node.js honeybadger.io notifier', function () {
       });
       hb.send(new Error('test error 3'));
     });
-    
+
     test('correctly sets the notifier field in the payload', function () {
       var n;
       n = payloads[payloads.length - 1].notifier;
