@@ -244,6 +244,12 @@ suite('node.js honeybadger.io notifier', function () {
   });
 
   suite('Stack trace filters', function () {
+    var hb = new Badger({
+      apiKey: 'fake api key',
+      server: {
+        project_root: '/path/to/badgers'
+      }
+    });
     var makePayload;
 
     beforeEach(function() {
@@ -251,8 +257,6 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     suite('Node modules', function () {
-      var hb = new Badger({ apiKey: 'fake api key' });
-
       test('always substitutes node modules', function (done) {
         hb.once('sent', function () {
           var p;
@@ -261,36 +265,11 @@ suite('node.js honeybadger.io notifier', function () {
           assert(p.error.backtrace[1].file.match(/^\[NODE_MODULES\]/), 'node modules not substituted: ' + p.error.backtrace[1].file);
           done();
         });
-        var err = new Error('Testing');
-        hb.send(err);
-      });
-    });
-
-    suite('Inside project root', function () {
-      var hb = new Badger({ apiKey: 'fake api key' });
-
-      test('substitutes files under project root', function (done) {
-        hb.once('sent', function () {
-          var p;
-          assert(payloads.length === (payloadCount + 1), 'payload not sent');
-          p = payloads[payloads.length - 1];
-          assert(p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project root not substituted: ' + p.error.backtrace[0].file);
-          assert(p.error.backtrace[1].file.match(/^\[NODE_MODULES\]/), 'node modules not substituted: ' + p.error.backtrace[1].file);
-          done();
-        });
-        var err = new Error('Testing');
-        hb.send(err);
+        hb.send(new Error('Testing'));
       });
     });
 
     suite('Outside project root', function () {
-      var hb = new Badger({
-        apiKey: 'fake api key',
-        server: {
-          project_root: '/path/to/badgers'
-        }
-      });
-
       test('does not substitute outside files', function (done) {
         hb.once('sent', function () {
           var p;
@@ -299,7 +278,24 @@ suite('node.js honeybadger.io notifier', function () {
           assert(!p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project should not be substituted: ' + p.error.backtrace[0].file);
           done();
         });
+        hb.send(new Error('Testing'));
+      });
+    });
+
+    suite('Inside project root', function () {
+      test('substitutes files under project root', function (done) {
         var err = new Error('Testing');
+        err.stack = "Error: Testing\n" +
+          "  at Badger (/path/to/badgers/test/honeybadger.js:258:13)\n" +
+          "  at callFn (/path/to/badgers/node_modules/foo/lib/foo.js:223:21)";
+        hb.once('sent', function () {
+          var p;
+          assert(payloads.length === (payloadCount + 1), 'payload not sent');
+          p = payloads[payloads.length - 1];
+          assert(p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project root not substituted: ' + p.error.backtrace[0].file);
+          assert(!p.error.backtrace[1].file.match(/^\[PROJECT_ROOT\]/), 'project root substituted, expected node modules: ' + p.error.backtrace[1].file);
+          done();
+        });
         hb.send(err);
       });
     });
