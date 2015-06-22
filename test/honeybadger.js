@@ -258,19 +258,24 @@ suite('node.js honeybadger.io notifier', function () {
 
     suite('Node modules', function () {
       test('always substitutes node modules', function (done) {
+        var err = new Error('Testing');
+        err.stack = "Error: Testing\n" +
+          // The double node_modules ensures that the regexp is inclusive.
+          "  at Badger (/path/to/badgers/node_modules/foo/node_modules/bar/baz.js:1:0)";
         hb.once('sent', function () {
           var p;
           assert(payloads.length === (payloadCount + 1), 'payload not sent');
           p = payloads[payloads.length - 1];
-          assert(p.error.backtrace[1].file.match(/^\[NODE_MODULES\]/), 'node modules not substituted: ' + p.error.backtrace[1].file);
+          assert(p.error.backtrace[0].file === "[NODE_MODULES]/bar/baz.js", 'node modules not substituted: ' + p.error.backtrace[0].file);
           done();
         });
-        hb.send(new Error('Testing'));
+        hb.send(err);
       });
     });
 
     suite('Outside project root', function () {
       test('does not substitute outside files', function (done) {
+        var err = new Error('Testing');
         hb.once('sent', function () {
           var p;
           assert(payloads.length === (payloadCount + 1), 'payload not sent');
@@ -278,7 +283,7 @@ suite('node.js honeybadger.io notifier', function () {
           assert(!p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project should not be substituted: ' + p.error.backtrace[0].file);
           done();
         });
-        hb.send(new Error('Testing'));
+        hb.send(err);
       });
     });
 
@@ -286,14 +291,12 @@ suite('node.js honeybadger.io notifier', function () {
       test('substitutes files under project root', function (done) {
         var err = new Error('Testing');
         err.stack = "Error: Testing\n" +
-          "  at Badger (/path/to/badgers/test/honeybadger.js:258:13)\n" +
-          "  at callFn (/path/to/badgers/node_modules/foo/lib/foo.js:223:21)";
+          "  at Badger (/path/to/badgers/test/honeybadger.js:258:13)";
         hb.once('sent', function () {
           var p;
           assert(payloads.length === (payloadCount + 1), 'payload not sent');
           p = payloads[payloads.length - 1];
           assert(p.error.backtrace[0].file.match(/^\[PROJECT_ROOT\]/), 'project root not substituted: ' + p.error.backtrace[0].file);
-          assert(!p.error.backtrace[1].file.match(/^\[PROJECT_ROOT\]/), 'project root substituted, expected node modules: ' + p.error.backtrace[1].file);
           done();
         });
         hb.send(err);
