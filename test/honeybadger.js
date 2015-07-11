@@ -63,6 +63,44 @@ suite('node.js honeybadger.io notifier', function () {
     });
   });
 
+  suite('Creating a Badger with development environments', function () {
+    var hb_options = {
+      apiKey: 'fake api key',
+      server: { name: 'honeybadger' },
+      developmentEnvironments: ['development', 'test']
+    };
+
+    test('successfully sends the payload in non-dev environments', function (done) {
+      hb_options.server.environment_name = 'production';
+      var hb = new Badger(hb_options),
+          payloadCount = payloads.length;
+
+      hb.once('sent', function () {
+        var p;
+        assert(payloads.length === (payloadCount + 1), 'payload not sent');
+        p = payloads[payloads.length - 1];
+        assert(p.error.message === 'test error dev-env', 'payload incorrect');
+        done();
+      });
+      hb.send(new Error('test error dev-env'));
+    });
+
+    test('makes it a no-op in dev environments', function (done) {
+      hb_options.server.environment_name = 'development';
+      var hb = new Badger(hb_options),
+          payloadCount = payloads.length;
+
+      hb.once('sent', function () {
+        throw new Error('This event should not fire!');
+      });
+      hb.send(new Error('test error dev-env'));
+      setTimeout(function () {
+        assert(payloads.length === payloadCount, 'Payload was sent in a dev environment');
+        done();
+      }, 10);
+    });
+  });
+
   suite('Creating a Badger with a custom notifier', function () {
     var hb = new Badger({
       apiKey: 'fake api key',
