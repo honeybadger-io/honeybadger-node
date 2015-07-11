@@ -50,7 +50,7 @@ suite('node.js honeybadger.io notifier', function () {
         var p;
         assert(payloads.length === (payloadCount + 1), 'payload not sent');
         p = payloads[payloads.length - 1];
-        assert(p.error.message = 'test error 2', 'payload incorrect');
+        assert(p.error.message === 'test error 2', 'payload incorrect');
         done();
       });
       hb.send(new Error('test error 2'));
