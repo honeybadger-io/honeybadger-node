@@ -17,10 +17,12 @@ var Badger = require('honeybadger');
 
 var hb = new Badger({
   apiKey: 'your api key goes here',
-  server: { hostname: 'steve', otherMetadata: 'goes here' },
+  server: { hostname: 'steve' },
   // Any object with info, warn, and error methods can be used as the logger.
   // If nothing is provided, nothing will be logged.
-  logger: console
+  logger: console,
+  // Environments which will not report data (optional).
+  developmentEnvironments: ['development', 'test']
 });
 
 var err = new Error('FLAGRANT ERROR!');
