@@ -1,6 +1,6 @@
 {
   "name": "honeybadger",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A node.js notifier for honeybadger.io",
   "main": "lib/honeybadger.js",
   "directories": {
