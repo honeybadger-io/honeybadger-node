@@ -1,66 +1,123 @@
-honeybadger-node
-================
+# Honeybadger for NodeJS
 
 [![Build Status](https://travis-ci.org/honeybadger-io/honeybadger-node.svg?branch=master)](https://travis-ci.org/honeybadger-io/honeybadger-node)
 
-`honeybadger-node` is a node.js module for sending errors and related metadata to
-[honeybadger.io](http://honeybadger.io).
+This is the node.js module for integrating apps with the :zap: [Honeybadger Exception Notifier for Ruby and Rails](http://honeybadger.io).
 
-It is small, lightweight, and uses the `stack-trace` module to give honeybadger
-the stack trace format it expects, allowing node.js stack traces to show up
-properly in the honeybadger UI.
+When an uncaught exception occurs, Honeybadger will POST the relevant data to the Honeybadger service, and we'll alert you to the problem.
 
-Usage is simple:
+This library is intended to be is small and lightweight. It depends on the `stack-trace` module.
 
-```js
-var Badger = require('honeybadger');
+## Getting Started
+ 
+### 1. Require the honeybadger module
 
-var hb = new Badger({
-  apiKey: 'your api key goes here',
-  server: { hostname: 'steve' },
-  // Any object with info, warn, and error methods can be used as the logger.
-  // If nothing is provided, nothing will be logged.
-  logger: console,
-  // Environments which will not report data (optional).
-  developmentEnvironments: ['development', 'test']
+```javascript
+var Honeybadger = require('honeybadger');
+```
+
+### 2. Set your API key 
+
+```javascript
+var hb = new Honeybadger({
+  apiKey: '[ YOUR API KEY HERE ]',
 });
+```
 
+### 3. Start reporting errors
+
+```javascript
 var err = new Error('FLAGRANT ERROR!');
-
 err.name = 'FlagrantError'
 
-// The second argument is error tracking metadata, like user/session id
-hb.send(err, {
-  context: {
-    user: 'jane',
+hb.send(err);
+```
+
+## Advanced Configuration
+
+All configuration options are passed into the constructor. The example below includes all available configuration options. 
+
+Note that the only configuration option you *have* to provide is `apiKey`.
+
+```javascript
+var hb = new HoneyBadger({
+  apiKey: 'your api key goes here',
+  server: { 
+    hostname: 'steve',             // Defaults to the server's hostname
+    environment_name: 'production' // Defaults to the current node environment
+    project_root: '/var/www'       // Defaults to the node process's current working directory
+  },
+
+  logger: console, // an object with `info`, `warn` and `error` methods, or null. 
+  developmentEnvironments: ['development', 'test'] // Environments which will not report data
+});
+```
+
+## Public Interface
+
+### `Honeybadger#send()`: Report an error to Honeybadger
+
+This is the only function you need. Give it an `Error` object, and some optional metadata and it reports the error to Honeybadger. 
+
+#### Examples:
+
+```javascript
+// You can report an error without any metadata
+hb.send(error) 
+
+// Metadata is provided via a second argument. 
+hb.send(error, {
+  context: { 
+    user: 'jane', 
     email: 'a@b.net'
   },
-  session: {},
-  headers: req.headers,
+  session: { user_token: "asdf" },  
+  headers: req.headers,           
   params: {},
-  cgi_data: {
+  cgi_data: {               
     'server-software': 'Node ' + process.version
   }
 });
-
 ```
 
-The `cgi_data` metadata field is important - this is what populates the
-"Environment" section of the Honeybadger error UI.  It usually contains HTTP
-headers and other server info, in the Ruby frameworks that Honeybadger mainly
-supports - since there is no sensible default in node for this, populating this
-field effectively is left as an exercise to the user.
+You can send the following metadata:
 
-Instances of `honeybadger-node` can also emit the following events:
- - `sent`: This is emitted when honeybadger.io returns a 201 successfully. The
-   response body, containing metadata about the submitted error, is emitted as
-data.
- - `error`: Emitted in the case of local node errors while trying to connect to
-   honeybadger.io.  *Will not be emitted unless a listener is present*.
- - `remoteError`: Emitted when a non-201 status code is returned by
-   honeybadger.io.  Emits the response body, if one is present.
+Key | Description
+---- | ----
+`context` | The context object is for app-specific data that will make error followup easier, like user ids 
+`session` | The session data as defined by whatever session manager you use
+`headers` | HTTP headers for the current request
+`params` | GET or POST params for the current request
+`cgi_data` | Information about the application environment. 
 
-Prior to version 0.4.0, `honeybadger-node` was a Writable Stream.  This
-interface has been removed, since it was only wishful thinking in the first
-place, and did not make a lot of sense in practice.
 
+---
+
+### Events
+
+Instances of `honeybadger-node` can emit the following events:
+
+Event         | Description
+----          | ----
+`sent`        | This is emitted when honeybadger.io returns a 201 successfully. The response body, containing metadata about the submitted error, is emitted as data.
+`error`       | Emitted in the case of local node errors while trying to connect to honeybadger.io.  *Will not be emitted unless a listener is present*.
+`remoteError` | Emitted when a non-201 status code is returned by Honeybadger.  Emits the response body, if one is present.
+
+
+
+## Contributing
+
+If you're adding a new feature, please [submit an issue](https://github.com/honeybadger-io/honeybadger-node/issues/new) as a preliminary step; that way you can be (moderately) sure that your pull request will be accepted.
+
+### To contribute your code:
+
+1. Fork it.
+2. Create a topic branch `git checkout -b my_branch`
+3. Commit your changes `git commit -am "Boom"`
+3. Push to your branch `git push origin my_branch`
+4. Send a [pull request](https://github.com/honeybadger-io/honeybadger-node/pulls)
+
+
+### License
+
+The Honeybadger gem is MIT licensed. See the [LICENSE](https://raw.github.com/honeybadger-io/honeybadger-node/master/LICENSE) file in this repository for details.
