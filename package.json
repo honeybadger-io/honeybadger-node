@@ -11,7 +11,9 @@
     "stack-trace": "~0.0.9"
   },
   "devDependencies": {
-    "mocha": "^1.18.2"
+    "mocha": "^1.18.2",
+    "nock": "^7.0.2",
+    "sinon": "^1.17.3"
   },
   "scripts": {
     "test": "mocha"

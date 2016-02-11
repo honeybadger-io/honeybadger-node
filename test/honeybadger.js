@@ -1,17 +1,25 @@
 
 
 var assert = require('assert'),
+    sinon  = require('sinon'),
+    nock   = require('nock'),
     Badger = require('../lib/honeybadger');
 
 suite('node.js honeybadger.io notifier', function () {
-  var payloads = [], payloadCount;
+  var api, payloadCount, payloads = [];
 
   setup(function () {
+    payloadCount = 0;
+    payloads = [];
+
     // Don't send actual requests to honeybadger.io from the test suite
-    Badger.prototype._post = function (data) {
-      payloads.push(data);
-      setImmediate(this.emit.bind(this, 'sent', {}));
-    };
+    nock.cleanAll();
+    var api = nock("https://api.honeybadger.io")
+      .post("/v1/notices")
+      .reply(function(uri, requestBody) {
+        payloads.push(requestBody);
+        return [201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}'];
+      });
   });
 
   suite('Creating a Badger without an API key', function () {
@@ -30,6 +38,63 @@ suite('node.js honeybadger.io notifier', function () {
         assert(payloads.length === payloadCount, 'Payload was sent without API key');
         done();
       }, 10);
+    });
+  });
+
+  suite('logging', function () {
+    test('logs info on success', function (done) {
+      var spy = sinon.spy(),
+          hb = new Badger({
+            apiKey: 'faked',
+            logger: {info: spy}
+          });
+
+      hb.once('sent', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.send(new Error('test error'));
+    });
+
+    test('logs error on remote failure', function (done) {
+      var spy = sinon.spy(),
+          hb = new Badger({
+            apiKey: 'faked',
+            logger: {error: spy}
+          });
+
+      nock.cleanAll();
+      nock("https://api.honeybadger.io")
+        .post("/v1/notices")
+        .reply([403, '']);
+
+      hb.once('remoteError', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.send(new Error('test error'));
+    });
+
+    test('logs error on exception', function (done) {
+      var spy = sinon.spy(),
+          hb = new Badger({
+            apiKey: 'faked',
+            logger: {error: spy}
+          });
+
+      nock.cleanAll();
+      nock("https://api.honeybadger.io")
+        .post("/v1/notices")
+        .replyWithError("boom");
+
+      hb.once('error', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.send(new Error('test error'));
     });
   });
 
@@ -57,9 +122,12 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('the server metadata is added to the payload', function () {
-      var s = payloads[payloads.length - 1];
-      assert(s.server.name === 'honeybadge', 'Server name not set.');
-      assert(s.server.role === 'testing', 'Server role not set.');
+      hb.once('sent', function () {
+        var s = payloads[payloads.length - 1];
+        assert(s.server.name === 'honeybadge', 'Server name not set.');
+        assert(s.server.role === 'testing', 'Server role not set.');
+        done();
+      });
     });
   });
 
@@ -125,11 +193,14 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('correctly sets the notifier field in the payload', function () {
-      var n;
-      n = payloads[payloads.length - 1].notifier;
-      assert(n.name === 'honeybadger test suite', 'name not set');
-      assert(n.url === 'https://notarealsite.net/page14.php', 'url not set');
-      assert(n.version === '0.4.18', 'version not set');
+      hb.once('sent', function () {
+        var n;
+        n = payloads[payloads.length - 1].notifier;
+        assert(n.name === 'honeybadger test suite', 'name not set');
+        assert(n.url === 'https://notarealsite.net/page14.php', 'url not set');
+        assert(n.version === '0.4.18', 'version not set');
+        done();
+      });
     });
   });
 
@@ -166,8 +237,11 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('The contextual metadata is passed correctly', function () {
-      var p = payloads[payloads.length - 1];
-      assert.deepEqual(p.request, meta, 'Metadata incorrect');
+      hb.once('sent', function () {
+        var p = payloads[payloads.length - 1];
+        assert.deepEqual(p.request, meta, 'Metadata incorrect');
+        done();
+      });
     });
   });
 
@@ -195,11 +269,13 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('transforms data keys according to the RFC 3875', function () {
-      var n;
-      n = payloads[payloads.length - 1].request.cgi_data;
-      assert(n['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
-      assert(n['CUSTOM'] === sampleCGIData['custom'], 'custom not set');
-      assert(('custom' in n) === false, 'untransformed keys present in payload');
+      hb.once('sent', function () {
+        var n;
+        n = payloads[payloads.length - 1].request.cgi_data;
+        assert(n['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
+        assert(n['CUSTOM'] === sampleCGIData['custom'], 'custom not set');
+        assert(('custom' in n) === false, 'untransformed keys present in payload');
+      });
     });
   });
 
@@ -228,12 +304,15 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('correctly sets the headers field in the payload', function () {
-      var n;
-      n = payloads[payloads.length - 1].request;
-      assert(n.cgi_data['HTTP_X_FORWARDED_FOR'] === sampleHeaders['x-forwarded-for'], 'x-forwarded-for not set');
-      assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
-      assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
-      assert(('headers' in n) === false, 'headers field is not removed from the payload');
+      hb.once('sent', function () {
+        var n;
+        n = payloads[payloads.length - 1].request;
+        assert(n.cgi_data['HTTP_X_FORWARDED_FOR'] === sampleHeaders['x-forwarded-for'], 'x-forwarded-for not set');
+        assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
+        assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
+        assert(('headers' in n) === false, 'headers field is not removed from the payload');
+        done();
+      });
     });
   });
 
@@ -269,15 +348,18 @@ suite('node.js honeybadger.io notifier', function () {
     });
 
     test('resultig payload has combined data from headers and cgi_data', function () {
-      var n;
-      n = payloads[payloads.length - 1].request;
-      assert(n.cgi_data['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
-      assert(n.cgi_data['CUSTOM'] === sampleCGIData['custom'], 'custom  not set');
-      assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
-      assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
-      assert(('custom' in n) === false, 'untransformed keys from cgi_data present in payload');
-      assert(('user-agent' in n) === false, 'untransformed keys from headers present in payload');
-      assert(('headers' in n) === false, 'headers field is not removed from the payload');
+      hb.once('sent', function () {
+        var n;
+        n = payloads[payloads.length - 1].request;
+        assert(n.cgi_data['SERVER_SOFTWARE'] === sampleCGIData['server-software'], 'server-software not set');
+        assert(n.cgi_data['CUSTOM'] === sampleCGIData['custom'], 'custom  not set');
+        assert(n.cgi_data['HTTP_USER_AGENT'] === sampleHeaders['user-agent'], 'user-agent not set');
+        assert(n.cgi_data['HTTP_COOKIE'] === sampleHeaders['cookie'], 'cookie not set');
+        assert(('custom' in n) === false, 'untransformed keys from cgi_data present in payload');
+        assert(('user-agent' in n) === false, 'untransformed keys from headers present in payload');
+        assert(('headers' in n) === false, 'headers field is not removed from the payload');
+        done();
+      });
     });
   });
 
