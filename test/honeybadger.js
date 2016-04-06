@@ -54,8 +54,19 @@ describe('Honeybadger', function () {
   });
 
   describe('#wrap()', function () {
-    it('is chainable', function () {
-      assert.equal(Honeybadger.wrap(function(){}), Honeybadger);
+    it('returns wrapped function value', function () {
+      var fn = function(result) {
+        return result;
+      };
+      assert.equal(Honeybadger.wrap(fn)('result'), 'result');
+    });
+
+    it('reports errors via #notify()', function () {
+      sinon.spy(Honeybadger, 'notify');
+      assert.throws(Honeybadger.wrap(function() {
+        throw(new Error('Badgers!'));
+      }), /Badgers!/);
+      assert(Honeybadger.notify.called);
     });
   });
 
