@@ -29,6 +29,36 @@ describe('Honeybadger', function () {
     });
   });
 
+  describe('#on()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.on('sent', function() {}), Honeybadger);
+    });
+  });
+
+  describe('#configure()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.configure({}), Honeybadger);
+    });
+  });
+
+  describe('#setContext()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.setContext({}), Honeybadger);
+    });
+  });
+
+  describe('#resetContext()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.resetContext({}), Honeybadger);
+    });
+  });
+
+  describe('#wrap()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.wrap(function(){}), Honeybadger);
+    });
+  });
+
   describe('#notify()', function () {
     it('is chainable', function () {
       assert.equal(Honeybadger.notify(new Error('test error 1')), Honeybadger);
