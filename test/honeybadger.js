@@ -39,6 +39,31 @@ describe('Honeybadger', function () {
     it('is chainable', function () {
       assert.equal(Honeybadger.configure({}), Honeybadger);
     });
+
+    it('throws on invalid config options', function () {
+      assert.throws(function(){
+        Honeybadger.configure({
+          notAValidOption: 'badgers'
+        });
+      }, /invalid/i);
+    });
+
+    it('sets valid config options', function () {
+      Honeybadger.configure({
+        apiKey: 'badgers',
+        environment: 'badger_env',
+        endpoint: 'https://www.example.com/',
+        projectRoot: 'badger_root',
+        component: 'badger_component',
+        action: 'badger_action'
+      });
+      assert.equal('badgers', Honeybadger.apiKey);
+      assert.equal('badger_env', Honeybadger.environment);
+      assert.equal('https://www.example.com/', Honeybadger.endpoint);
+      assert.equal('badger_root', Honeybadger.projectRoot);
+      assert.equal('badger_component', Honeybadger.component);
+      assert.equal('badger_action', Honeybadger.action);
+    });
   });
 
   describe('#setContext()', function () {
