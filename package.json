@@ -1,6 +1,6 @@
 {
   "name": "honeybadger",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "A node.js notifier for honeybadger.io",
   "main": "lib/honeybadger.js",
   "directories": {
@@ -11,8 +11,8 @@
     "stack-trace": "~0.0.9"
   },
   "devDependencies": {
-    "mocha": "^1.18.2",
-    "nock": "^7.0.2",
+    "mocha": "^2.4.5",
+    "nock": "^7.7.3",
     "sinon": "^1.17.3"
   },
   "scripts": {
@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git://github.com/honeybadger-io/honeybadger-node.git"
   },
-  "author": "AvianFlu <charlie@charlieistheman.com>",
+  "author": "Joshua Wood <josh@honeybadger.io>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/honeybadger-io/honeybadger-node/issues"
