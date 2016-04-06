@@ -1,12 +1,15 @@
 var assert = require('assert'),
     sinon  = require('sinon'),
     nock   = require('nock'),
-    Honeybadger = require('../lib/honeybadger');
+    Singleton = require('../lib/honeybadger'),
+    Honeybadger;
 
 describe('Honeybadger', function () {
   var api, payloadCount, payloads = [];
 
   setup(function () {
+    Honeybadger = Singleton.factory();
+
     payloadCount = 0;
     payloads = [];
 
@@ -42,6 +45,23 @@ describe('Honeybadger', function () {
           assert.equal(payloads.length, payloadCount);
           done();
         }, 10);
+      });
+    });
+
+    describe('when configured', function () {
+      it('sends notification', function (done) {
+        var payloadCount = payloads.length;
+        Honeybadger.apiKey = 'foo';
+
+        Honeybadger.once('sent', function () {
+          var p;
+          assert.equal(payloads.length, payloadCount + 1);
+          p = payloads[payloads.length - 1];
+          assert.equal(p.error.message, 'Badgers!');
+          done();
+        });
+
+        Honeybadger.notify(new Error('Badgers!'));
       });
     });
   });
