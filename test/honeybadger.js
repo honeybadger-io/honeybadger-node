@@ -64,7 +64,7 @@ describe('Honeybadger', function () {
       assert.equal(Honeybadger.notify(new Error('test error 1')), Honeybadger);
     });
 
-    describe('when not configured', function () {
+    context('when not configured', function () {
       it('skips notification', function (done) {
         var payloadCount = payloads.length;
         Honeybadger.once('sent', function () {
@@ -78,7 +78,7 @@ describe('Honeybadger', function () {
       });
     });
 
-    describe('when configured', function () {
+    context('when configured', function () {
       it('sends notification', function (done) {
         var payloadCount = payloads.length;
         Honeybadger.apiKey = 'foo';
@@ -88,10 +88,29 @@ describe('Honeybadger', function () {
           assert.equal(payloads.length, payloadCount + 1);
           p = payloads[payloads.length - 1];
           assert.equal(p.error.message, 'Badgers!');
+          assert.strictEqual(p.error.backtrace[0].file, __filename)
           done();
         });
 
         Honeybadger.notify(new Error('Badgers!'));
+      });
+
+      context('with a string as first arg', function () {
+        it('generates a backtrace', function (done) {
+          var payloadCount = payloads.length;
+          Honeybadger.apiKey = 'foo';
+
+          Honeybadger.once('sent', function () {
+            var p;
+            assert.equal(payloads.length, payloadCount + 1);
+            p = payloads[payloads.length - 1];
+            assert.equal(p.error.message, 'Badgers!');
+            assert.strictEqual(p.error.backtrace[0].file, __filename)
+            done();
+          });
+
+          Honeybadger.notify('Badgers!');
+        });
       });
     });
   });
