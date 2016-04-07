@@ -166,6 +166,63 @@ describe('Honeybadger', function () {
     });
   });
 
+  suite('backend logging', function () {
+    test('logs info on success', function (done) {
+      var spy = sinon.spy(),
+          hb = Singleton.factory({
+            apiKey: 'faked',
+            logger: {info: spy}
+          });
+
+      hb.once('sent', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.notify(new Error('test error'));
+    });
+
+    test('logs error on remote failure', function (done) {
+      var spy = sinon.spy(),
+          hb = Singleton.factory({
+            apiKey: 'faked',
+            logger: {error: spy}
+          });
+
+      nock.cleanAll();
+      nock("https://api.honeybadger.io")
+        .post("/v1/notices")
+        .reply([403, '']);
+
+      hb.once('remoteError', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.notify(new Error('test error'));
+    });
+
+    test('logs error on exception', function (done) {
+      var spy = sinon.spy(),
+          hb = Singleton.factory({
+            apiKey: 'faked',
+            logger: {error: spy}
+          });
+
+      nock.cleanAll();
+      nock("https://api.honeybadger.io")
+        .post("/v1/notices")
+        .replyWithError("boom");
+
+      hb.once('error', function () {
+        sinon.assert.calledOnce(spy);
+        done();
+      });
+
+      hb.notify(new Error('test error'));
+    });
+  });
+
   suite('Stack trace filters', function () {
     var hb = Singleton.factory({
       apiKey: 'fake api key',
