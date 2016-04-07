@@ -124,7 +124,7 @@ This is the only function you need. Give it an `Error` object, and some optional
 
 ```javascript
 // You can report an error without any metadata
-Honeybadger.notify(error)
+Honeybadger.notify(error);
 
 // Metadata is provided via a second argument.
 Honeybadger.notify(error, {
