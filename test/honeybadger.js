@@ -54,13 +54,15 @@ describe('Honeybadger', function () {
         environment: 'badger_env',
         endpoint: 'https://www.example.com/',
         projectRoot: 'badger_root',
-        hostname: 'badger_host'
+        hostname: 'badger_host',
+        logger: console
       });
       assert.equal('badgers', Honeybadger.apiKey);
       assert.equal('badger_env', Honeybadger.environment);
       assert.equal('https://www.example.com/', Honeybadger.endpoint);
       assert.equal('badger_root', Honeybadger.projectRoot);
       assert.equal('badger_host', Honeybadger.hostname);
+      assert.equal(console, Honeybadger.logger);
     });
   });
 

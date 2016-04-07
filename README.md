@@ -103,16 +103,21 @@ HoneyBadger.configure({
   // Defaults to the node process's current working directory. (env: HONEYBADGER_PROJECT_ROOT)
   projectRoot: '/var/www',
 
-  // The log level to output if using Honeybadger's default console logger. (env: HONEYBADGER_LOG_LEVEL)
-  logLevel: 'info',
-
-  // An object with `info`, `warn` and `error` methods, or null.
+  // An object with `info` and `error` methods.
   logger: console,
 
   // Environments which will not report data.
   developmentEnvironments: ['dev', 'development', 'test']
 });
 ```
+
+### Configuring the default logger
+
+Honeybadger provides a default logger which reports info and error level logs to
+stdout/stderr (basically a proxy to `console`). The default level is "error"
+("info" logs will be silenced). To configure the log level you can set
+`Honeybadger.logger.level = 'info'` or set the `HONEYBADGER_LOG_LEVEL=info`
+environment variable before executing your program.
 
 ## Public Interface
 
