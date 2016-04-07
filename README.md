@@ -107,7 +107,11 @@ HoneyBadger.configure({
   logger: console,
 
   // Environments which will not report data.
-  developmentEnvironments: ['dev', 'development', 'test']
+  developmentEnvironments: ['dev', 'development', 'test'],
+
+  // Key values to filter from request data. Matches are partial, so "password"
+  // and "password_confirmation" will both be filtered.
+  filters: ['creditcard', 'password']
 });
 ```
 
