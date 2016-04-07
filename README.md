@@ -88,26 +88,26 @@ Note that the only configuration option you *have* to provide is `apiKey`.
 
 ```javascript
 HoneyBadger.configure({
-  // The API key of your Honeybadger project.
+  // The API key of your Honeybadger project. (env: HONEYBADGER_API_KEY)
   apiKey: 'your api key goes here',
 
-  // The API endpoint to use. Must be a valid URL with no trailing slash.
+  // The API endpoint to use. Must be a valid URL with no trailing slash. (env: HONEYBADGER_ENDPOINT)
   endpoint: 'https://api.honeybadger.io',
 
-  // Defaults to the server's hostname.
+  // Defaults to the server's hostname. (env: HONEYBADGER_HOSTNAME)
   hostname: 'badger01',
 
-  // Defaults to the current node environment.
+  // Defaults to the current node environment. (env: HONEYBADGER_ENVIRONMENT)
   environment: 'staging',
 
-  // Defaults to the node process's current working directory.
+  // Defaults to the node process's current working directory. (env: HONEYBADGER_PROJECT_ROOT)
   projectRoot: '/var/www',
+
+  // The log level to output if using Honeybadger's default console logger. (env: HONEYBADGER_LOG_LEVEL)
+  logLevel: 'info',
 
   // An object with `info`, `warn` and `error` methods, or null.
   logger: console,
-
-  // The log level to output if using Honeybadger's default console logger.
-  logLevel: 'info',
 
   // Environments which will not report data.
   developmentEnvironments: ['dev', 'development', 'test']
