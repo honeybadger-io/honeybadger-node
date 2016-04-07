@@ -68,6 +68,18 @@ Honeybadger.wrap(function(){
 
 Note that re-throwing the exceptions will cause them to be reported by any additional error handlers that may catch them.
 
+## Sample Application
+
+If you'd like to see the library in action before you integrate it with your apps, check out our [sample Node.js/Express application](https://github.com/honeybadger-io/crywolf-node). 
+
+You can deploy the sample app to your Heroku account by clicking this button:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/honeybadger-io/crywolf-node)
+
+Don't forget to destroy the Heroku app after you're done so that you aren't charged for usage.
+
+The code for the sample app is [available on Github](https://github.com/honeybadger-io/crywolf-node), in case you'd like to read through it, or run it locally.
+
 ## Advanced Configuration
 
 There are a few ways to configure the Honeybadger module. You can use `#configure()` at runtime. You can use environment variables. Or you can use a combination of the two.
