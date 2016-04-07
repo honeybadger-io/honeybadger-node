@@ -70,7 +70,7 @@ Note that re-throwing the exceptions will cause them to be reported by any addit
 
 ## Sample Application
 
-If you'd like to see the library in action before you integrate it with your apps, check out our [sample Node.js/Express application](https://github.com/honeybadger-io/crywolf-node). 
+If you'd like to see the library in action before you integrate it with your apps, check out our [sample Node.js/Express application](https://github.com/honeybadger-io/crywolf-node).
 
 You can deploy the sample app to your Heroku account by clicking this button:
 
@@ -90,25 +90,25 @@ Note that the only configuration option you *have* to provide is `apiKey`.
 HoneyBadger.configure({
   // The API key of your Honeybadger project.
   apiKey: 'your api key goes here',
-  
+
   // The API endpoint to use. Must be a valid URL with no trailing slash.
   endpoint: 'https://api.honeybadger.io',
 
   // Defaults to the server's hostname.
   hostname: 'badger01',
-  
+
   // Defaults to the current node environment.
   environment: 'staging',
-  
+
   // Defaults to the node process's current working directory.
   projectRoot: '/var/www',
-  
+
   // An object with `info`, `warn` and `error` methods, or null.
   logger: console,
-  
+
   // The log level to output if using Honeybadger's default console logger.
   logLevel: 'info',
-  
+
   // Environments which will not report data.
   developmentEnvironments: ['dev', 'development', 'test']
 });
@@ -118,24 +118,24 @@ HoneyBadger.configure({
 
 ### `Honeybadger#notify()`: Report an error to Honeybadger
 
-This is the only function you need. Give it an `Error` object, and some optional metadata and it reports the error to Honeybadger. 
+This is the only function you need. Give it an `Error` object, and some optional metadata and it reports the error to Honeybadger.
 
 #### Examples:
 
 ```javascript
 // You can report an error without any metadata
-Honeybadger.notify(error) 
+Honeybadger.notify(error)
 
-// Metadata is provided via a second argument. 
+// Metadata is provided via a second argument.
 Honeybadger.notify(error, {
-  context: { 
-    user: 'jane', 
+  context: {
+    user: 'jane',
     email: 'a@b.net'
   },
-  session: { user_token: "asdf" },  
-  headers: req.headers,           
+  session: { user_token: "asdf" },
+  headers: req.headers,
   params: {},
-  cgiData: {               
+  cgiData: {
     'server-software': 'Node ' + process.version
   }
 });
@@ -147,11 +147,11 @@ Key | Description
 ---- | ----
 `name` | (`String`) The error's type/class name.
 `message` | (`String`) The error message.
-`context` | (`Object`) The context object is for app-specific data that will make error followup easier, like user ids 
+`context` | (`Object`) The context object is for app-specific data that will make error followup easier, like user ids
 `session` | (`Object`) The session data as defined by whatever session manager you use
 `headers` | (`Object`) HTTP headers for the current request
 `params` | (`Object`) GET or POST params for the current request
-`cgiData` | (`Object`) Information about the application environment. 
+`cgiData` | (`Object`) Information about the application environment.
 `url` | (`String`) The URL associated with the request, if any.
 `component` | (`String`) The software component (displayed in Honeybadger as: component#action).
 `action` | (`String`) The action within the component.
