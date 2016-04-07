@@ -7,8 +7,6 @@ This is the Node.js module for integrating apps with the :zap: [Honeybadger Exce
 
 When an uncaught exception occurs, Honeybadger will POST the relevant data to the Honeybadger service, and we'll alert you to the problem.
 
-This library is intended to be is small and lightweight. It depends on the `stack-trace` module.
-
 ## Getting Started
 
 In this section, we'll cover the basics. More advanced installations are covered later.
