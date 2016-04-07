@@ -8,7 +8,7 @@ describe('Honeybadger', function () {
   var api, payloadCount, payloads = [];
 
   setup(function () {
-    Honeybadger = Singleton.factory();
+    Honeybadger = Singleton.factory({ apiKey: 'foo' });
 
     payloadCount = 0;
     payloads = [];
@@ -21,6 +21,24 @@ describe('Honeybadger', function () {
         payloads.push(requestBody);
         return [201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}'];
       });
+  });
+
+  teardown(function() {
+    Singleton.configure({
+      apiKey: undefined
+    });
+  });
+
+  describe('#factory()', function () {
+    it('creates a new client instance', function () {
+      Singleton.configure({
+        apiKey: 'foo'
+      });
+      var subject = Singleton.factory({ apiKey: 'bar' });
+      assert.equal(subject.notify, Singleton.notify);
+      assert.equal(Singleton.apiKey, 'foo');
+      assert.equal(subject.apiKey, 'bar');
+    });
   });
 
   describe('#once()', function () {
@@ -103,6 +121,7 @@ describe('Honeybadger', function () {
     context('when not configured', function () {
       it('skips notification', function (done) {
         var payloadCount = payloads.length;
+        Honeybadger.apiKey = undefined;
         Honeybadger.once('sent', function () {
           throw new Error('This event should not fire!');
         });
@@ -117,8 +136,6 @@ describe('Honeybadger', function () {
     context('when configured', function () {
       it('sends notification', function (done) {
         var payloadCount = payloads.length;
-        Honeybadger.apiKey = 'foo';
-
         Honeybadger.once('sent', function () {
           var p;
           assert.equal(payloads.length, payloadCount + 1);
@@ -134,8 +151,6 @@ describe('Honeybadger', function () {
       context('with a string as first arg', function () {
         it('generates a backtrace', function (done) {
           var payloadCount = payloads.length;
-          Honeybadger.apiKey = 'foo';
-
           Honeybadger.once('sent', function () {
             var p;
             assert.equal(payloads.length, payloadCount + 1);
