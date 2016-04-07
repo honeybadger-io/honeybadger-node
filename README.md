@@ -121,7 +121,7 @@ environment variable before executing your program.
 
 ## Public Interface
 
-### `Honeybadger#notify()`: Report an error to Honeybadger
+### `Honeybadger.notify()`: Report an error to Honeybadger
 
 This is the only function you need. Give it an `Error` object, and some optional metadata and it reports the error to Honeybadger.
 
@@ -161,6 +161,92 @@ Key | Description
 `component` | (`String`) The software component (displayed in Honeybadger as: component#action).
 `action` | (`String`) The action within the component.
 
+---
+
+### `Honeybadger.wrap()`: Wrap the given function in try/catch and report any exceptions
+
+It can be a pain to include try/catch blocks everywhere in your app. A slightly nicer option is to use `Honeybadger.wrap`. You pass it a function. It returns a new function which wraps your existing function in a try/catch block. Errors will be re-thrown after they are reported.
+
+#### Examples:
+
+```javascript
+Honeybadger.wrap(function(){
+  throw "oops";
+})();
+```
+
+Note that `wrap` returns a function. This makes it easy to use with async callbacks, as in the example below:
+
+```javascript
+myEventEmitter.on('event', Honeybadger.wrap(function(){ throw "oops"; }));
+```
+
+---
+
+### `Honeybadger.setContext()`: Set metadata to be sent if an exception occurs
+
+Javascript exceptions are pretty bare-bones. You probably have some additional data that could make them a lot easier to understand - perhaps the name of the current controller/view, or the id of the current user. This function lets you set context data that will be sent if an error should occur.
+
+You can call `setContext` as many times as you like. New context data will be merged with the existing data.
+
+#### Examples:
+
+```javascript
+// On load
+Honeybadger.setContext({
+  user_id: 123
+});
+
+// Later
+Honeybadger.setContext({
+  controller_name: 'posts'
+});
+
+// The context now contains { user_id: 123, controller_name: 'posts' }
+```
+
+---
+
+### `Honeybadger.resetContext()`: Clear context metadata
+
+If you've used `Honeybadger.setContext` to store context data, you can clear it with `Honeybadger.resetContext`.
+
+#### Example:
+
+```javascript
+// Set the context to {}
+Honeybadger.resetContext();
+
+// Clear the context, then set it to `{ user_id: 123 }`
+Honeybadger.resetContext({
+  user_id: 123
+});
+```
+
+---
+
+### `Honeybadger.configure()`: Set configuration values
+
+The `configure` method takes an object containing config values. Its return value is unspecified.
+
+#### Examples:
+
+```javascript
+Honeybadger.configure({api_key: "adlkjfljk"});
+```
+
+---
+
+### `Honeybadger.factory()`: create a new client instance.
+
+The `factory` method returns a new instance of Honeybadger which can be configured differently than the global/singleton instance.
+
+#### Examples:
+
+```javascript
+var other_hb = Honeybadger.factory({apiKey: "zxcvbnm"});
+other_hb.notify("This will go to an alternate project.");
+```
 
 ---
 
