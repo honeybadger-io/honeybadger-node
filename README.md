@@ -160,6 +160,7 @@ Key | Description
 `url` | (`String`) The URL associated with the request, if any.
 `component` | (`String`) The software component (displayed in Honeybadger as: component#action).
 `action` | (`String`) The action within the component.
+`fingerprint` | (`String`) An optional grouping fingerprint.
 
 ---
 
