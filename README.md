@@ -232,7 +232,7 @@ The `configure` method takes an object containing config values. Its return valu
 #### Examples:
 
 ```javascript
-Honeybadger.configure({api_key: "adlkjfljk"});
+Honeybadger.configure({apiKey: "adlkjfljk"});
 ```
 
 ---
@@ -246,6 +246,18 @@ The `factory` method returns a new instance of Honeybadger which can be configur
 ```javascript
 var other_hb = Honeybadger.factory({apiKey: "zxcvbnm"});
 other_hb.notify("This will go to an alternate project.");
+```
+
+---
+
+### `Honeybadger.errorHandler()`: middleware for Express and Connect.
+
+The `errorHandler` method is an error reporting middleware for [Express](http://expressjs.com/) and [Connect](https://github.com/senchalabs/connect#readme) apps. Use the middleware in your app to report all errors which happen during the request. Request data such as params, session, and cookies will be automatically reported.
+
+#### Examples:
+
+```node
+app.use(Honeybadger.errorHandler);
 ```
 
 ---
