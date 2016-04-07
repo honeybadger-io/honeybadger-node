@@ -122,7 +122,7 @@ describe('Honeybadger', function () {
           assert.equal(payloads.length, payloadCount + 1);
           p = payloads[payloads.length - 1];
           assert.equal(p.error.message, 'Badgers!');
-          assert.strictEqual(p.error.backtrace[0].file, __filename)
+          assert.strictEqual(p.error.backtrace[0].file, "[PROJECT_ROOT]/test/honeybadger.js")
           done();
         });
 
@@ -139,7 +139,7 @@ describe('Honeybadger', function () {
             assert.equal(payloads.length, payloadCount + 1);
             p = payloads[payloads.length - 1];
             assert.equal(p.error.message, 'Badgers!');
-            assert.strictEqual(p.error.backtrace[0].file, __filename)
+            assert.strictEqual(p.error.backtrace[0].file, '[PROJECT_ROOT]/test/honeybadger.js')
             done();
           });
 
