@@ -1,61 +1,112 @@
 # Honeybadger for NodeJS
 
 [![Build Status](https://travis-ci.org/honeybadger-io/honeybadger-node.svg?branch=master)](https://travis-ci.org/honeybadger-io/honeybadger-node)
+[![npm version](https://badge.fury.io/js/honeybadger.svg)](https://badge.fury.io/js/honeybadger)
 
-This is the node.js module for integrating apps with the :zap: [Honeybadger Exception Notifier for Ruby and Rails](http://honeybadger.io).
+This is the Node.js module for integrating apps with the :zap: [Honeybadger Exception Notifier for JavaScript and Node](http://honeybadger.io).
 
 When an uncaught exception occurs, Honeybadger will POST the relevant data to the Honeybadger service, and we'll alert you to the problem.
 
 This library is intended to be is small and lightweight. It depends on the `stack-trace` module.
 
 ## Getting Started
- 
-### 1. Require the honeybadger module
+
+In this section, we'll cover the basics. More advanced installations are covered later.
+
+### 1. Install the npm package
+
+```javascript
+npm install honeybadger --save
+```
+
+### 2. Require the honeybadger module
 
 ```javascript
 var Honeybadger = require('honeybadger');
 ```
 
-### 2. Set your API key 
+### 3. Set your API key
 
 ```javascript
-var hb = new Honeybadger({
-  apiKey: '[ YOUR API KEY HERE ]',
+Honeybadger.configure({
+  apiKey: '[ YOUR API KEY HERE ]'
 });
 ```
 
-### 3. Start reporting errors
+You can also place your API key in the `HONEYBADGER_API_KEY` environment variable if you prefer the 12-factor app configuration style.
+
+### 4. Set up your code
+
+#### Express or Connect Framework
+
+Errors which happen in [Express](http://expressjs.com/) or [Connect](https://github.com/senchalabs/connect#readme) apps can be automatically reported to Honeybadger by installing our middleware.
+
+In order to function properly our middleware must be added after your normal app middleware but before any error handling middleware:
+
+```node
+app.use(Honeybadger.errorHandler);
+```
+
+#### Manually reporting exceptions
+
+To catch exceptions and report them manually:
 
 ```javascript
-var err = new Error('FLAGRANT ERROR!');
-err.name = 'FlagrantError'
-
-hb.send(err);
+try {
+  throw(new Error('Badgers!'));
+} catch(err) {
+  Honeybadger.notify(err);
+  throw(err);
+}
 ```
+
+You can also use the `#wrap()` function to simplify the previous example:
+
+```javascript
+Honeybadger.wrap(function(){
+  throw(new Error('Badgers!'));
+})();
+```
+
+Note that re-throwing the exceptions will cause them to be reported by any additional error handlers that may catch them.
 
 ## Advanced Configuration
 
-All configuration options are passed into the constructor. The example below includes all available configuration options. 
+There are a few ways to configure the Honeybadger module. You can use `#configure()` at runtime. You can use environment variables. Or you can use a combination of the two.
 
 Note that the only configuration option you *have* to provide is `apiKey`.
 
 ```javascript
-var hb = new HoneyBadger({
+HoneyBadger.configure({
+  // The API key of your Honeybadger project.
   apiKey: 'your api key goes here',
-  server: { 
-    hostname: 'steve',             // Defaults to the server's hostname
-    environment_name: 'production' // Defaults to the current node environment
-    project_root: '/var/www'       // Defaults to the node process's current working directory
-  },
+  
+  // The API endpoint to use. Must be a valid URL with no trailing slash.
+  endpoint: 'https://api.honeybadger.io',
 
-  logger: console, // an object with `info`, `warn` and `error` methods, or null. 
-  developmentEnvironments: ['development', 'test'] // Environments which will not report data
+  // Defaults to the server's hostname.
+  hostname: 'badger01',
+  
+  // Defaults to the current node environment.
+  environment: 'staging',
+  
+  // Defaults to the node process's current working directory.
+  projectRoot: '/var/www',
+  
+  // An object with `info`, `warn` and `error` methods, or null.
+  logger: console,
+  
+  // The log level to output if using Honeybadger's default console logger.
+  logLevel: 'info',
+  
+  // Environments which will not report data.
+  developmentEnvironments: ['dev', 'development', 'test']
 });
 ```
 
 ## Public Interface
 
-### `Honeybadger#send()`: Report an error to Honeybadger
+### `Honeybadger#notify()`: Report an error to Honeybadger
 
 This is the only function you need. Give it an `Error` object, and some optional metadata and it reports the error to Honeybadger. 
 
@@ -63,10 +114,10 @@ This is the only function you need. Give it an `Error` object, and some optional
 
 ```javascript
 // You can report an error without any metadata
-hb.send(error) 
+Honeybadger.notify(error) 
 
 // Metadata is provided via a second argument. 
-hb.send(error, {
+Honeybadger.notify(error, {
   context: { 
     user: 'jane', 
     email: 'a@b.net'
@@ -74,7 +125,7 @@ hb.send(error, {
   session: { user_token: "asdf" },  
   headers: req.headers,           
   params: {},
-  cgi_data: {               
+  cgiData: {               
     'server-software': 'Node ' + process.version
   }
 });
@@ -84,11 +135,16 @@ You can send the following metadata:
 
 Key | Description
 ---- | ----
-`context` | The context object is for app-specific data that will make error followup easier, like user ids 
-`session` | The session data as defined by whatever session manager you use
-`headers` | HTTP headers for the current request
-`params` | GET or POST params for the current request
-`cgi_data` | Information about the application environment. 
+`name` | (`String`) The error's type/class name.
+`message` | (`String`) The error message.
+`context` | (`Object`) The context object is for app-specific data that will make error followup easier, like user ids 
+`session` | (`Object`) The session data as defined by whatever session manager you use
+`headers` | (`Object`) HTTP headers for the current request
+`params` | (`Object`) GET or POST params for the current request
+`cgiData` | (`Object`) Information about the application environment. 
+`url` | (`String`) The URL associated with the request, if any.
+`component` | (`String`) The software component (displayed in Honeybadger as: component#action).
+`action` | (`String`) The action within the component.
 
 
 ---
@@ -103,7 +159,9 @@ Event         | Description
 `error`       | Emitted in the case of local node errors while trying to connect to honeybadger.io.  *Will not be emitted unless a listener is present*.
 `remoteError` | Emitted when a non-201 status code is returned by Honeybadger.  Emits the response body, if one is present.
 
+## Changelog
 
+See https://github.com/honeybadger-io/honeybadger-node/blob/master/CHANGELOG.md
 
 ## Contributing
 
@@ -117,6 +175,9 @@ If you're adding a new feature, please [submit an issue](https://github.com/hone
 3. Push to your branch `git push origin my_branch`
 4. Send a [pull request](https://github.com/honeybadger-io/honeybadger-node/pulls)
 
+### Development
+
+Clone the repo, and then `npm install`. Now you should be able to run `npm test`.
 
 ### License
 
