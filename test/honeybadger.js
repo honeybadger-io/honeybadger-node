@@ -181,6 +181,10 @@ describe('Honeybadger', function () {
     });
   });
 
+  // The following suites test other areas of the lib through
+  // `Honeybadger.notify` and could be better integrated in the future (they
+  // are from an earlier version).
+
   suite('backend logging', function () {
     test('logs info on success', function (done) {
       var spy = sinon.spy(),
@@ -339,7 +343,7 @@ describe('Honeybadger', function () {
     });
   });
 
-  suite('Creating a Badger with cgi_data meta', function () {
+  suite('Creating a notice with cgi_data meta', function () {
     var hb = Singleton.factory({
       apiKey: 'fake api key'
     });
@@ -372,7 +376,7 @@ describe('Honeybadger', function () {
     });
   });
 
-  suite('Creating a Badger with headers meta', function () {
+  suite('Creating a notice with headers meta', function () {
     var hb = Singleton.factory({
       apiKey: 'fake api key'
     });
@@ -408,7 +412,7 @@ describe('Honeybadger', function () {
     });
   });
 
-  suite('Creating a Badger with both cgi_data and headers meta', function () {
+  suite('Creating a notice with both cgi_data and headers meta', function () {
     var hb = Singleton.factory({
       apiKey: 'fake api key'
     });
