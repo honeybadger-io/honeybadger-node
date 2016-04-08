@@ -148,6 +148,21 @@ describe('Honeybadger', function () {
         Honeybadger.notify(new Error('Badgers!'));
       });
 
+      context('in a development environment', function () {
+        it('skips notification', function (done) {
+          var payloadCount = payloads.length;
+          Honeybadger.environment = 'development';
+          Honeybadger.once('sent', function () {
+            throw new Error('This event should not fire!');
+          });
+          Honeybadger.notify(new Error('test error 1'));
+          setTimeout(function () {
+            assert.equal(payloads.length, payloadCount);
+            done();
+          }, 10);
+        });
+      });
+
       context('with a string as first arg', function () {
         it('generates a backtrace', function (done) {
           var payloadCount = payloads.length;
