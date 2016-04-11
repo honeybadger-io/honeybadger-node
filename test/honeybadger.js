@@ -193,12 +193,10 @@ describe('Honeybadger', function () {
             logger: {info: spy}
           });
 
-      hb.once('sent', function () {
+      hb.notify(new Error('test error'), function() {
         sinon.assert.calledOnce(spy);
         done();
       });
-
-      hb.notify(new Error('test error'));
     });
 
     test('logs error on remote failure', function (done) {
@@ -213,12 +211,10 @@ describe('Honeybadger', function () {
         .post("/v1/notices")
         .reply([403, '']);
 
-      hb.once('remoteError', function () {
+      hb.notify(new Error('test error'), function() {
         sinon.assert.calledOnce(spy);
         done();
       });
-
-      hb.notify(new Error('test error'));
     });
 
     test('logs error on exception', function (done) {
@@ -233,12 +229,10 @@ describe('Honeybadger', function () {
         .post("/v1/notices")
         .replyWithError("boom");
 
-      hb.once('error', function () {
+      hb.notify(new Error('test error'), function () {
         sinon.assert.calledOnce(spy);
         done();
       });
-
-      hb.notify(new Error('test error'));
     });
   });
 

@@ -135,7 +135,7 @@ This is the only function you need. Give it an `Error` object, and some optional
 // You can report an error without any metadata
 Honeybadger.notify(error);
 
-// Metadata is provided via a second argument.
+// Metadata is provided via a second or third argument.
 Honeybadger.notify(error, {
   context: {
     user: 'jane',
@@ -165,6 +165,39 @@ Key | Description
 `component` | (`String`) The software component (displayed in Honeybadger as: component#action).
 `action` | (`String`) The action within the component.
 `fingerprint` | (`String`) An optional grouping fingerprint.
+
+JavaScript often uses generic class names -- such as `Error` -- which are uninformative and also cause unrelated errors to be grouped together. To get around this issue it's a good practice to send a custom error class when notifying Honeybadger:
+
+```javascript
+Honeybadger.notify(error, 'DescriptiveClass');
+Honeybadger.notify(error, 'DescriptiveClass', { ... });
+```
+
+You can notify Honeybadger of anything, even if you don't have an error object. We'll automatically generate a stacktrace for you:
+
+```javascript
+Honeybadger.notify('Badgers!');
+Honeybadger.notify('Badgers!', { ... });
+Honeybadger.notify('Badgers!', 'CustomClass');
+Honeybadger.notify('Badgers!', 'CustomClass', { ... });
+Honeybadger.notify({
+  message: 'Badgers!',
+  name: 'CustomClass',
+  ...
+});
+```
+
+Finally, you can provide an optional callback as the last argument to any call to `Honeybadger.notify()`. The callback will always be called regardless of the result of the notification:
+
+```javascript
+Honeybadger.notify(err, function notifyCallback(err, notice) {
+  if (err) {
+    return console.error(err);
+  }
+  // If there was no error, log the notice:
+  console.log(notice); // { id: 'uuid' }
+});
+```
 
 ---
 
