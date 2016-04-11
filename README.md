@@ -267,6 +267,28 @@ app.use(Honeybadger.errorHandler);
 
 ---
 
+### `Honeybadger.onUncaughtException()`: configure the uncaught exception handler
+
+Honeybadger's default uncaught exception handler logs the error and exits the
+process after notifying Honeybadger of the uncaught exception. You can change
+the default handler by calling `Honeybadger.onUncaughtException()` with a new
+handler function. Honeybadger will still be notified before your handler is
+invoked. Note that it's important to exit the process cleanly if you replace the
+handler; see [Warning: using 'uncaughtException'
+correctly](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly)
+for additional information.
+
+#### Examples:
+
+```node
+Honeybadger.onUncaughtException(function(err) {
+  doSomethingWith(err);
+  process.exit(1);
+});
+```
+
+---
+
 ### Events
 
 Instances of `honeybadger-node` can emit the following events:
