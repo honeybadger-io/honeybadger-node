@@ -267,7 +267,7 @@ app.use(Honeybadger.errorHandler);
 
 ---
 
-### `Honeybadger.onUncaughtException()`: configure the uncaught exception handler
+### `Honeybadger.onUncaughtException()`: configure the uncaught exception handler.
 
 Honeybadger's default uncaught exception handler logs the error and exits the
 process after notifying Honeybadger of the uncaught exception. You can change
