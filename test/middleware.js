@@ -1,5 +1,7 @@
 var assert = require('assert'),
     sinon = require('sinon'),
+    express = require('express'),
+    request = require('supertest'),
     middleware = require('../lib/middleware');
 
 describe('Express Middleware', function () {
@@ -11,17 +13,32 @@ describe('Express Middleware', function () {
     subject = middleware.errorHandler(client);
   });
 
-  it('reports the error to Honeybadger', function () {
-    var err = new Error('Badgers!');
-    client_mock.expects('notify').once().withArgs(err);
-    subject(err, {}, {}, function(){});
-    client_mock.verify();
-  });
-
-  it('calls next', function () {
+  it('calls next', function() {
     var err = new Error('Badgers!');
     next = sinon.spy();
+
     subject(err, {}, {}, next);
+
     assert(next.called);
+  });
+
+  it('reports the error to Honeybadger', function(done) {
+    var err = new Error('Badgers!');
+    var app = express();
+
+    app.use(function(req, res, next){
+      throw(err);
+    });
+    app.use(subject);
+
+    client_mock.expects('notify').once().withArgs(err);
+
+    request(app.listen())
+    .get('/')
+    .end(function(err, res){
+      if (err) return done(err);
+      client_mock.verify();
+      done();
+    });
   });
 });
