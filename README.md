@@ -275,7 +275,7 @@ Honeybadger.configure({apiKey: "adlkjfljk"});
 
 ---
 
-### `Honeybadger.factory()`: create a new client instance.
+### `Honeybadger.factory()`: create a new client instance
 
 The `factory` method returns a new instance of Honeybadger which can be configured differently than the global/singleton instance.
 
@@ -288,7 +288,7 @@ other_hb.notify("This will go to an alternate project.");
 
 ---
 
-### `Honeybadger.errorHandler()`: middleware for Express and Connect.
+### `Honeybadger.errorHandler()`: middleware for Express and Connect
 
 The `errorHandler` method is an error reporting middleware for [Express](http://expressjs.com/) and [Connect](https://github.com/senchalabs/connect#readme) apps. Use the middleware in your app to report all errors which happen during the request. Request data such as params, session, and cookies will be automatically reported.
 
@@ -300,7 +300,7 @@ app.use(Honeybadger.errorHandler);
 
 ---
 
-### `Honeybadger.onUncaughtException()`: configure the uncaught exception handler.
+### `Honeybadger.onUncaughtException()`: configure the uncaught exception handler
 
 Honeybadger's default uncaught exception handler logs the error and exits the
 process after notifying Honeybadger of the uncaught exception. You can change
