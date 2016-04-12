@@ -111,6 +111,18 @@ describe('Honeybadger', function () {
       }), /Badgers!/);
       assert(Honeybadger.notify.called);
     });
+
+    it('reports async errors via #notify()', function () {
+      sinon.spy(Honeybadger, 'notify');
+      Honeybadger.wrap(function() {
+        setTimeout(function asyncThrow() {
+          throw(new Error('Badgers!'));
+        }, 0);
+      })();
+      process.nextTick(function asyncThrow() {
+        assert(Honeybadger.notify.called);
+      });
+    });
   });
 
   describe('#notify()', function () {
