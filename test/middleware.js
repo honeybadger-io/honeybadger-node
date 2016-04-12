@@ -26,8 +26,31 @@ describe('Express Middleware', function () {
     var err = new Error('Badgers!');
     var app = express();
 
-    app.use(function(req, res, next){
+    app.use(function(req, res, next) {
       throw(err);
+    });
+    app.use(subject);
+
+    client_mock.expects('notify').once().withArgs(err);
+
+    request(app.listen())
+    .get('/')
+    .end(function(err, res){
+      if (err) return done(err);
+      client_mock.verify();
+      done();
+    });
+  });
+
+  it('reports async errors to Honeybadger', function(done) {
+    var err = new Error('Badgers!');
+    var app = express();
+
+    app.use(middleware.requestHandler({}));
+    app.use(function(req, res, next) {
+      setTimeout(function asyncThrow() {
+        throw(err);
+      }, 0);
     });
     app.use(subject);
 

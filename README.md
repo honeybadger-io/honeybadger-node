@@ -39,11 +39,16 @@ You can also place your API key in the `HONEYBADGER_API_KEY` environment variabl
 
 Errors which happen in [Express](http://expressjs.com/) or [Connect](https://github.com/senchalabs/connect#readme) apps can be automatically reported to Honeybadger by installing our middleware.
 
-In order to function properly our middleware must be added after your normal app middleware but before any error handling middleware:
+In order to function properly our middleware must be added before and after your normal app middleware, but before any other error handling middleware:
 
 ```node
-app.use(Honeybadger.errorHandler);
+app.use(Honeybadger.requestHandler); // Use *before* all other app middleware.
+// app.use(myMiddleware);
+app.use(Honeybadger.errorHandler);  // Use *after* all other app middleware.
+// app.use(myErrorMiddleware);
 ```
+
+Note: If you use the [connect-domain](https://www.npmjs.com/package/connect-domain) middleware, you do *not* need to use `Honeybadger.requestHandler` because they are essentially the same.
 
 #### Manually reporting exceptions
 
