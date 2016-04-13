@@ -3,36 +3,47 @@ var assert = require('assert'),
     express = require('express'),
     request = require('supertest'),
     nock   = require('nock'),
-    middleware = require('../lib/middleware');
+    Singleton = require('../lib/honeybadger');
 
 describe('Express Middleware', function () {
-  var subject, client_mock;
+  var subject, client_mock, client;
+  var error = new Error('Badgers!');
 
-  setup(function () {
-    var client = { notify: function(){} };
+  setup(function() {
+    client = Singleton.factory({ apiKey: 'fake api key' });
+    subject = client.errorHandler;
+
     client_mock = sinon.mock(client);
-    subject = middleware.errorHandler(client);
   });
 
   it('calls next', function() {
-    var err = new Error('Badgers!');
-    next = sinon.spy();
+    var app = express();
+    var expected = sinon.spy();
 
-    subject(err, {}, {}, next);
+    app.use(function(req, res, next) {
+      throw(error);
+    });
+    app.use(subject);
+    app.use(function(err, req, res, next) {
+      expected();
+    });
 
-    assert(next.called);
+    request(app.listen())
+    .get('/')
+    .end(function(err, res){
+      if (err) return done(err);
+      assert(expected.called);
+      done();
+    });
   });
 
   it('reports the error to Honeybadger', function(done) {
-    var err = new Error('Badgers!');
     var app = express();
 
     app.use(function(req, res, next) {
-      throw(err);
+      throw(error);
     });
     app.use(subject);
-
-    client_mock.expects('notify').once().withArgs(err);
 
     request(app.listen())
     .get('/')
@@ -44,18 +55,17 @@ describe('Express Middleware', function () {
   });
 
   it('reports async errors to Honeybadger', function(done) {
-    var err = new Error('Badgers!');
     var app = express();
 
-    app.use(middleware.requestHandler({}));
+    app.use(client.requestHandler);
     app.use(function(req, res, next) {
       setTimeout(function asyncThrow() {
-        throw(err);
+        throw(error);
       }, 0);
     });
     app.use(subject);
 
-    client_mock.expects('notify').once().withArgs(err);
+    client_mock.expects('notify').once().withArgs(error);
 
     request(app.listen())
     .get('/')
