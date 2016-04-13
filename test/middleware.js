@@ -2,6 +2,7 @@ var assert = require('assert'),
     sinon = require('sinon'),
     express = require('express'),
     request = require('supertest'),
+    nock   = require('nock'),
     middleware = require('../lib/middleware');
 
 describe('Express Middleware', function () {
@@ -63,5 +64,54 @@ describe('Express Middleware', function () {
       client_mock.verify();
       done();
     });
+  });
+});
+
+describe('Lambda Handler', function () {
+  var api;
+  var Honeybadger = require('../lib/honeybadger').factory({ apiKey: 'fake api key' });
+
+  setup(function() {
+    api = nock("https://api.honeybadger.io")
+      .post("/v1/notices")
+      .reply(201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}')
+  });
+
+  it('reports errors to Honeybadger', function(done) {
+    var context = {
+      fail: function() {
+        done("should never succeed.");
+      },
+      fail: function(err) {
+        api.done();
+        done();
+      }
+    };
+
+    var handler = Honeybadger.lambdaHandler(function(event, context) {
+      throw new Error("Badgers!");
+    });
+
+    handler({}, context);
+  });
+
+  it('reports async errors to Honeybadger', function(done) {
+    var context = {
+      fail: function() {
+        done("should never succeed.");
+      },
+      fail: function(err) {
+        api.done();
+        done();
+      }
+    };
+
+    var handler = Honeybadger.lambdaHandler(function(event, context) {
+      setTimeout(function() {
+        throw new Error("Badgers!");
+      }, 0);
+    });
+
+    handler({}, context);
   });
 });
