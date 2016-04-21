@@ -355,8 +355,7 @@ Instances of `honeybadger-node` can emit the following events:
 Event         | Description
 ----          | ----
 `sent`        | This is emitted when honeybadger.io returns a 201 successfully. The response body, containing metadata about the submitted error, is emitted as data.
-`error`       | Emitted in the case of local node errors while trying to connect to honeybadger.io.  *Will not be emitted unless a listener is present*.
-`remoteError` | Emitted when a non-201 status code is returned by Honeybadger.  Emits the response body, if one is present.
+`error`       | Emitted in the case of any error while trying to connect to honeybadger.io.  *Will not be emitted unless a listener is present*.
 
 ## Changelog
 
