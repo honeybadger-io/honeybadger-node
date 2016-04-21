@@ -60,7 +60,7 @@ Errors which happen in [Express](http://expressjs.com/) or [Connect](https://git
 
 In order to function properly our middleware must be added before and after your normal app middleware, but before any other error handling middleware:
 
-```node
+```javascript
 app.use(Honeybadger.requestHandler); // Use *before* all other app middleware.
 // app.use(myMiddleware);
 app.use(Honeybadger.errorHandler);  // Use *after* all other app middleware.
@@ -318,7 +318,7 @@ The `errorHandler` method is an error reporting middleware for [Express](http://
 
 #### Examples:
 
-```node
+```javascript
 app.use(Honeybadger.errorHandler);
 ```
 
@@ -330,7 +330,7 @@ The `lambdaHandler` method is wrapper for [AWS Lambda](https://aws.amazon.com/la
 
 #### Examples:
 
-```node
+```javascript
 // Your handler function.
 function handler(event, context) {
   console.log('Event:', event);
@@ -358,7 +358,7 @@ for additional information.
 
 #### Examples:
 
-```node
+```javascript
 Honeybadger.onUncaughtException(function(err) {
   doSomethingWith(err);
   process.exit(1);
