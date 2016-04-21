@@ -11,7 +11,7 @@ When an uncaught exception occurs, Honeybadger will POST the relevant data to th
 
 We made some breaking changes in 1.0, so if you currently use 0.x, you will need to update your usage. In most cases you should be able to replace the old `hb.send()` function with `hb.notify()`. Instead of configuring the client as an instance, you can require the global singleton instead:
 
-```node
+```javascript
 var hb = require('honeybadger');
 
 hb.configure({
