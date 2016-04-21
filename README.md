@@ -326,7 +326,7 @@ app.use(Honeybadger.errorHandler);
 
 ### `Honeybadger.lambdaHandler()`: handler for AWS Lambda
 
-The `lambdaHandler` method is wrapper for [AWS Lambda](https://aws.amazon.com/lambda/). You pass it your Lambda function and it returns a new function which reports errors to Honeybadger.
+The `lambdaHandler` method is a wrapper for [AWS Lambda](https://aws.amazon.com/lambda/). You pass it your Lambda function and it returns a new function which reports errors to Honeybadger.
 
 #### Examples:
 
@@ -335,8 +335,8 @@ The `lambdaHandler` method is wrapper for [AWS Lambda](https://aws.amazon.com/la
 function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
-  throw new Error('Something went wrong.');
-  console.log('Shouldn't make it here.');
+  throw(new Error('Something went wrong.'));
+  console.log("Shouldn't make it here.");
 }
 
 // Build and export the function.
