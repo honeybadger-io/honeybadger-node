@@ -54,6 +54,8 @@ You can also place your API key in the `HONEYBADGER_API_KEY` environment variabl
 
 ### 4. Set up your code
 
+By default Honeybadger will be notified automatically of all unhandled errors which crash your node processes. Many applications catch errors, however, so you may want to set up some additional framework integrations:
+
 #### Express or Connect Framework
 
 Errors which happen in [Express](http://expressjs.com/) or [Connect](https://github.com/senchalabs/connect#readme) apps can be automatically reported to Honeybadger by installing our middleware.
@@ -68,6 +70,25 @@ app.use(Honeybadger.errorHandler);  // Use *after* all other app middleware.
 ```
 
 Note: If you use the [connect-domain](https://www.npmjs.com/package/connect-domain) middleware, you do *not* need to use `Honeybadger.requestHandler` because they are essentially the same.
+
+#### AWS Lambda
+
+Honeybadger can automatically report errors which happen on [AWS Lambda](https://aws.amazon.com/lambda/):
+
+```javascript
+// Your handler function.
+function handler(event, context) {
+  console.log('Event:', event);
+  console.log('Context:', context);
+  throw(new Error('Something went wrong.'));
+  console.log("Shouldn't make it here.");
+}
+
+// Build and export the function.
+exports.handler = Honeybadger.lambdaHandler(handler);
+```
+
+Check out our [example Lambda project](https://github.com/honeybadger-io/honeybadger-lambda-node) for a complete example.
 
 #### Manually reporting exceptions
 
