@@ -75,6 +75,22 @@ describe('Express Middleware', function () {
       done();
     });
   });
+
+  it('reports metrics to Honeybadger', function(done) {
+    var app = express();
+
+    app.use(client.metricHandler);
+
+    client_mock.expects('timing').once().withArgs("app.request.404");
+
+    request(app.listen())
+    .get('/')
+    .end(function(err, res){
+      if (err) return done(err);
+      client_mock.verify();
+      done();
+    });
+  });
 });
 
 describe('Lambda Handler', function () {
