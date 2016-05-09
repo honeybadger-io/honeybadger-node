@@ -79,7 +79,7 @@ describe('Express Middleware', function () {
   it('reports metrics to Honeybadger', function(done) {
     var app = express();
 
-    app.use(client.metricHandler);
+    app.use(client.metricsHandler);
 
     client_mock.expects('timing').once().withArgs("app.request.404");
 
