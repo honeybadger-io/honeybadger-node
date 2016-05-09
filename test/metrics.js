@@ -20,6 +20,7 @@ describe('Honeybadger metrics', function () {
 
       for (var i = 0; i < 100; i++) {
         metrics.timing('app.request.200', i);
+        metrics.counter('foo', i);
       }
 
       metrics.collect(function() {
@@ -28,6 +29,7 @@ describe('Honeybadger metrics', function () {
         assert.equal(payloads[0].hostname, 'test hostname');
         assert.equal(payloads[0].environment_name, 'test environment');
         assert.deepEqual(payloads[0].metrics, [
+          'foo 4950',
           'app.request.200:mean 49.5',
           'app.request.200:median 49.5',
           'app.request.200:percentile_90 90',
