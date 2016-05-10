@@ -35,9 +35,9 @@ describe('Honeybadger', function () {
     });
   });
 
-  describe('#counter()', function () {
+  describe('#increment()', function () {
     it('is chainable', function () {
-      assert.equal(Honeybadger.counter('foo', 1), Honeybadger);
+      assert.equal(Honeybadger.increment('foo', 1), Honeybadger);
     });
   });
 

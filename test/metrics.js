@@ -20,7 +20,7 @@ describe('Honeybadger metrics', function () {
 
       for (var i = 0; i < 100; i++) {
         metrics.timing('app.request.200', i);
-        metrics.counter('foo', i);
+        metrics.increment('foo', i);
       }
 
       metrics.collect(function() {
