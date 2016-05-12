@@ -29,6 +29,18 @@ describe('Honeybadger', function () {
     });
   });
 
+  describe('#timing()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.timing('app.request.200', 1.0), Honeybadger);
+    });
+  });
+
+  describe('#increment()', function () {
+    it('is chainable', function () {
+      assert.equal(Honeybadger.increment('foo', 1), Honeybadger);
+    });
+  });
+
   describe('#factory()', function () {
     it('creates a new client instance', function () {
       Singleton.configure({
