@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "mathjs": "^3.2.1",
-    "request": "~2.34.0",
+    "request": "~2.72.0",
     "stack-trace": "~0.0.9"
   },
   "devDependencies": {
