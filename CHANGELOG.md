@@ -5,7 +5,7 @@ adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
-## [1.1.0] - 2016-06-16
+## [1.1.1] - 2016-06-16
 ### Fixed
 - Bump *request* package to `~2.72.0` to fix security vulnerabilities. -@gazay
 
