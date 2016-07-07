@@ -103,11 +103,15 @@ describe('Lambda Handler', function () {
       .reply(201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}')
   });
 
+  it('calls original handlers with arguments', function() {
+    var handlerFunc = sinon.spy();
+    var handler = Honeybadger.lambdaHandler(handlerFunc);
+    handler(1, 2, 3);
+    assert(handlerFunc.calledWith(1, 2, 3));
+  });
+
   it('reports errors to Honeybadger', function(done) {
     var context = {
-      fail: function() {
-        done("should never succeed.");
-      },
       fail: function(err) {
         api.done();
         done();
@@ -118,14 +122,13 @@ describe('Lambda Handler', function () {
       throw new Error("Badgers!");
     });
 
-    handler({}, context);
+    assert.throws(function(){
+      handler({}, context);
+    }, /Badgers!/);
   });
 
   it('reports async errors to Honeybadger', function(done) {
     var context = {
-      fail: function() {
-        done("should never succeed.");
-      },
       fail: function(err) {
         api.done();
         done();

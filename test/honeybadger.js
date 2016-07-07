@@ -135,6 +135,36 @@ describe('Honeybadger', function () {
         assert(Honeybadger.notify.called);
       });
     });
+
+    it('calls the callback as 2nd argument', function () {
+      var callback = sinon.spy();
+
+      // Call callbacks synchronously.
+      Honeybadger.notify = function(err, opts, cb) {
+        callback();
+      };
+
+      assert.throws(Honeybadger.wrap(function() {
+        throw(new Error('Badgers!'));
+      }, callback), /Badgers!/);
+
+      assert(callback.calledOnce);
+    });
+
+    it('calls the callback as 3rd argument', function () {
+      var callback = sinon.spy();
+
+      // Call callbacks synchronously.
+      Honeybadger.notify = function(err, opts, cb) {
+        callback();
+      };
+
+      assert.throws(Honeybadger.wrap(function() {
+        throw(new Error('Badgers!'));
+      }, {}, callback), /Badgers!/);
+
+      assert(callback.calledOnce);
+    });
   });
 
   describe('#notify()', function () {
