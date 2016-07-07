@@ -95,9 +95,10 @@ describe('Express Middleware', function () {
 
 describe('Lambda Handler', function () {
   var api;
-  var Honeybadger = require('../lib/honeybadger').factory({ apiKey: 'fake api key' });
+  var Honeybadger;
 
   setup(function() {
+    Honeybadger = Singleton.factory({ apiKey: 'fake api key' });
     api = nock("https://api.honeybadger.io")
       .post("/v1/notices")
       .reply(201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}')
@@ -110,37 +111,68 @@ describe('Lambda Handler', function () {
     assert(handlerFunc.calledWith(1, 2, 3));
   });
 
-  it('reports errors to Honeybadger', function(done) {
-    var context = {
-      fail: function(err) {
-        api.done();
-        done();
-      }
-    };
+  it('reports errors to Honeybadger', function() {
+    sinon.spy(Honeybadger, 'notify');
 
-    var handler = Honeybadger.lambdaHandler(function(event, context) {
+    var handler = Honeybadger.lambdaHandler(function() {
       throw new Error("Badgers!");
     });
 
     assert.throws(function(){
-      handler({}, context);
+      handler({}, {}, function(){});
     }, /Badgers!/);
+
+    assert(Honeybadger.notify.called);
   });
 
   it('reports async errors to Honeybadger', function(done) {
-    var context = {
-      fail: function(err) {
-        api.done();
-        done();
-      }
-    };
+    sinon.spy(Honeybadger, 'notify');
 
-    var handler = Honeybadger.lambdaHandler(function(event, context) {
+    Honeybadger.lambdaHandler(function() {
       setTimeout(function() {
         throw new Error("Badgers!");
       }, 0);
+    })({}, {}, function(){});
+
+    setTimeout(function assertion() {
+      assert(Honeybadger.notify.calledOnce);
+      done();
+    }, 10);
+  });
+
+  context("pre-nodejs4.3 runtime", function() {
+    it('reports errors to Honeybadger', function(done) {
+      var context = {
+        fail: function(err) {
+          api.done();
+          done();
+        }
+      };
+
+      var handler = Honeybadger.lambdaHandler(function(event, context) {
+        throw new Error("Badgers!");
+      });
+
+      assert.throws(function(){
+        handler({}, context);
+      }, /Badgers!/);
     });
 
-    handler({}, context);
+    it('reports async errors to Honeybadger', function(done) {
+      var context = {
+        fail: function(err) {
+          api.done();
+          done();
+        }
+      };
+
+      var handler = Honeybadger.lambdaHandler(function(event, context) {
+        setTimeout(function() {
+          throw new Error("Badgers!");
+        }, 0);
+      });
+
+      handler({}, context);
+    });
   });
 });

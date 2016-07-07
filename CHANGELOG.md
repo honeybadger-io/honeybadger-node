@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](http://semver.org/).
   nodejs 0.10.42 runtime.
 - Fixed a bug in `Honeybadger.lambdaHandler()` where callback was called without
   original arguments (the new implementation uses `Honeybadger.wrap`).
+- Support nodejs4.3 runtime in `Honeybadger.lambdaHandler()`.
 
 ### Added
 - Use `Honeybadger.flushMetrics()` to clear the timeout interval and flush
