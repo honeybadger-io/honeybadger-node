@@ -143,8 +143,6 @@ describe('Honeybadger', function () {
     });
 
     context('when not configured', function () {
-      var payloadCount;
-
       beforeEach(function (done) {
         Honeybadger.apiKey = undefined;
         payloadCount = payloads.length;
@@ -159,8 +157,6 @@ describe('Honeybadger', function () {
     });
 
     context('when configured', function () {
-      var payloadCount;
-
       beforeEach(function (done) {
         payloadCount = payloads.length;
         Honeybadger.notify(new Error('test error that should be sent'), function(err, notice) {
@@ -178,8 +174,6 @@ describe('Honeybadger', function () {
     });
 
     context('when in a development environment', function () {
-      var payloadCount;
-
       beforeEach(function (done) {
         payloadCount = payloads.length;
         Honeybadger.environment = 'development';
@@ -194,8 +188,6 @@ describe('Honeybadger', function () {
     });
 
     context('without a stack trace', function () {
-      var payloadCount;
-
       beforeEach(function (done) {
         payloadCount = payloads.length;
         Honeybadger.notify('test error (string) with no stack trace', function(err, notice) {
