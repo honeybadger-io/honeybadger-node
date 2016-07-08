@@ -138,8 +138,11 @@ describe('Honeybadger', function () {
   });
 
   describe('#notify()', function () {
-    it('is chainable', function () {
-      assert.equal(Honeybadger.notify(new Error('test error 1')), Honeybadger);
+    it('is chainable', function (done) {
+      var returnValue = Honeybadger.notify(new Error('test error 1'), function() {
+        done();
+      });
+      assert.equal(returnValue, Honeybadger);
     });
 
     context('when not configured', function () {
@@ -152,7 +155,6 @@ describe('Honeybadger', function () {
       });
 
       it('skips notification', function () {
-        console.log(payloads);
         assert.equal(payloads.length, payloadCount);
       });
     });
