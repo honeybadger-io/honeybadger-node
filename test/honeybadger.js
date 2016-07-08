@@ -152,6 +152,7 @@ describe('Honeybadger', function () {
       });
 
       it('skips notification', function () {
+        console.log(payloads);
         assert.equal(payloads.length, payloadCount);
       });
     });
