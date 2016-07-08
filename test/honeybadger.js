@@ -143,64 +143,71 @@ describe('Honeybadger', function () {
     });
 
     context('when not configured', function () {
-      it('skips notification', function (done) {
-        var payloadCount = payloads.length;
+      var payloadCount;
+
+      beforeEach(function (done) {
         Honeybadger.apiKey = undefined;
-        Honeybadger.once('sent', function () {
-          throw new Error('This event should not fire!');
-        });
-        Honeybadger.notify(new Error('test error 1'));
-        setTimeout(function () {
-          assert.equal(payloads.length, payloadCount);
+        payloadCount = payloads.length;
+        Honeybadger.notify(new Error('test error that should not be sent'), function(err, notice) {
           done();
-        }, 10);
+        });
+      });
+
+      it('skips notification', function () {
+        assert.equal(payloads.length, payloadCount);
       });
     });
 
     context('when configured', function () {
-      it('sends notification', function (done) {
-        var payloadCount = payloads.length;
-        Honeybadger.once('sent', function () {
-          var p;
-          assert.equal(payloads.length, payloadCount + 1);
-          p = payloads[payloads.length - 1];
-          assert.equal(p.error.message, 'Badgers!');
-          assert.strictEqual(p.error.backtrace[0].file, "[PROJECT_ROOT]/test/honeybadger.js")
+      var payloadCount;
+
+      beforeEach(function (done) {
+        payloadCount = payloads.length;
+        Honeybadger.notify(new Error('test error that should be sent'), function(err, notice) {
           done();
         });
-
-        Honeybadger.notify(new Error('Badgers!'));
       });
 
-      context('in a development environment', function () {
-        it('skips notification', function (done) {
-          var payloadCount = payloads.length;
-          Honeybadger.environment = 'development';
-          Honeybadger.once('sent', function () {
-            throw new Error('This event should not fire!');
-          });
-          Honeybadger.notify(new Error('test error 1'));
-          setTimeout(function () {
-            assert.equal(payloads.length, payloadCount);
-            done();
-          }, 10);
+      it('sends notification', function () {
+        var p;
+        assert.equal(payloads.length, payloadCount + 1);
+        p = payloads[payloads.length - 1];
+        assert.equal(p.error.message, 'test error that should be sent');
+        assert.strictEqual(p.error.backtrace[0].file, "[PROJECT_ROOT]/test/honeybadger.js")
+      });
+    });
+
+    context('when in a development environment', function () {
+      var payloadCount;
+
+      beforeEach(function (done) {
+        payloadCount = payloads.length;
+        Honeybadger.environment = 'development';
+        Honeybadger.notify(new Error('test error that should not be sent'), function(err, notice) {
+          done();
         });
       });
 
-      context('with a string as first arg', function () {
-        it('generates a backtrace', function (done) {
-          var payloadCount = payloads.length;
-          Honeybadger.once('sent', function () {
-            var p;
-            assert.equal(payloads.length, payloadCount + 1);
-            p = payloads[payloads.length - 1];
-            assert.equal(p.error.message, 'Badgers!');
-            assert.strictEqual(p.error.backtrace[0].file, '[PROJECT_ROOT]/test/honeybadger.js')
-            done();
-          });
+      it('skips notification', function () {
+        assert.equal(payloads.length, payloadCount);
+      });
+    });
 
-          Honeybadger.notify('Badgers!');
+    context('without a stack trace', function () {
+      var payloadCount;
+
+      beforeEach(function (done) {
+        payloadCount = payloads.length;
+        Honeybadger.notify('test error (string) with no stack trace', function(err, notice) {
+          done();
         });
+      });
+
+      it('generates a stack trace', function () {
+        assert.equal(payloads.length, payloadCount + 1);
+        var p = payloads[payloads.length - 1];
+        assert(p.error.message.match(/no stack trace/));
+        assert.strictEqual(p.error.backtrace[0].file, '[PROJECT_ROOT]/test/honeybadger.js')
       });
     });
   });
