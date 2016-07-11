@@ -104,14 +104,6 @@ try {
 }
 ```
 
-You can also use the `#wrap()` function to simplify the previous example:
-
-```javascript
-Honeybadger.wrap(function(){
-  throw(new Error('Badgers!'));
-})();
-```
-
 Note that re-throwing the exceptions will cause them to be reported by any additional error handlers that may catch them.
 
 ## Sample Application
@@ -243,26 +235,6 @@ Honeybadger.notify(err, function notifyCallback(err, notice) {
   // If there was no error, log the notice:
   console.log(notice); // { id: 'uuid' }
 });
-```
-
----
-
-### `Honeybadger.wrap()`: Wrap the given function in try/catch and report any exceptions
-
-It can be a pain to include try/catch blocks everywhere in your app. A slightly nicer option is to use `Honeybadger.wrap`. You pass it a function. It returns a new function which wraps your existing function in a try/catch block. Errors will be re-thrown after they are reported.
-
-#### Examples:
-
-```javascript
-Honeybadger.wrap(function(){
-  throw "oops";
-})();
-```
-
-Note that `wrap` returns a function. This makes it easy to use with async callbacks, as in the example below:
-
-```javascript
-myEventEmitter.on('event', Honeybadger.wrap(function(){ throw "oops"; }));
 ```
 
 ---
