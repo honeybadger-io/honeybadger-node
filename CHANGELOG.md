@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](http://semver.org/).
   for the event loop to empty.
 - Fixed a bug where uncaught exception handler wasn't called in development
   environment (see #14).
+- Call original handler with arguments in `Honeybadger.lambdaHandler()`.
 
 ### Added
 - Use `Honeybadger.flushMetrics()` to clear the timeout interval and flush

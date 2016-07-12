@@ -103,6 +103,23 @@ describe('Lambda Handler', function () {
       .reply(201, '{"id":"1a327bf6-e17a-40c1-ad79-404ea1489c7a"}')
   });
 
+  context('with arguments', function() {
+    var handlerFunc;
+
+    beforeEach(function(done) {
+      handlerFunc = sinon.spy();
+      var handler = Honeybadger.lambdaHandler(handlerFunc);
+      handler(1, 2, 3);
+      process.nextTick(function() {
+        done();
+      });
+    });
+
+    it('calls original handler with arguments', function() {
+      assert(handlerFunc.calledWith(1, 2, 3));
+    });
+  });
+
   it('reports errors to Honeybadger', function(done) {
     var context = {
       fail: function() {
