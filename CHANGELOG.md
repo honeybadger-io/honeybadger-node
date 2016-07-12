@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](http://semver.org/).
 - `setTimeout` is now called when metrics are recorded instead of recursively.
   This fixes an issue in environments like AWS Lambda where the execution waits
   for the event loop to empty.
+- Fixed a bug where uncaught exception handler wasn't called in development
+  environment (see #14).
 
 ### Added
 - Use `Honeybadger.flushMetrics()` to clear the timeout interval and flush
