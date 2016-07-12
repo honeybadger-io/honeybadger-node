@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. See [Keep a
 CHANGELOG](http://keepachangelog.com/) for how to update this file. This project
 adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [1.1.2] - 2016-07-12
 ### Fixed
 - `setTimeout` is now called when metrics are recorded instead of recursively.
   This fixes an issue in environments like AWS Lambda where the execution waits
