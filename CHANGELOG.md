@@ -16,6 +16,9 @@ adheres to [Semantic Versioning](http://semver.org/).
 - Use `Honeybadger.flushMetrics()` to clear the timeout interval and flush
   metrics immediately.
 
+### Changed
+- Deprecate `Honeybadger.wrap()`
+
 ## [1.1.1] - 2016-06-16
 ### Fixed
 - Bump *request* package to `~2.72.0` to fix security vulnerabilities. -@gazay
