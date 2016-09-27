@@ -64,7 +64,6 @@ In order to function properly our middleware must be added before and after your
 
 ```javascript
 app.use(Honeybadger.requestHandler); // Use *before* all other app middleware.
-app.use(Honeybadger.metricsHandler); // Optional; send request metrics (requires a Medium plan or better).
 // app.use(myMiddleware);
 app.use(Honeybadger.errorHandler);  // Use *after* all other app middleware.
 // app.use(myErrorMiddleware);
@@ -314,18 +313,6 @@ The `errorHandler` method is an error reporting middleware for [Express](http://
 
 ```javascript
 app.use(Honeybadger.errorHandler);
-```
-
----
-
-### `Honeybadger.metricsHandler()`: request metrics middleware for Express and Connect
-
-The `metricsHandler` method is a middleware for [Express](http://expressjs.com/) and [Connect](https://github.com/senchalabs/connect#readme) apps. Use the middleware in your app to send request metrics to Honeybadger (available via the "Metrics" dashboard for your project). Requires a Medium plan or better.
-
-#### Examples:
-
-```javascript
-app.use(Honeybadger.metricsHandler);
 ```
 
 ---
