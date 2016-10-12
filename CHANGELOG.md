@@ -4,8 +4,14 @@ CHANGELOG](http://keepachangelog.com/) for how to update this file. This project
 adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+## [1.1.3] - 2016-08-15
 ### Changed
 - Deprecate `Honeybadger.wrap()`
+- Updated dependency for request package.
+
+### Fixed
+- Add missing filters configuration option.
 
 ## [1.1.2] - 2016-07-12
 ### Fixed
