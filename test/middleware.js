@@ -76,18 +76,21 @@ describe('Express Middleware', function () {
     });
   });
 
-  it('reports metrics to Honeybadger', function(done) {
+  it('provides a noop metricsHandler', function(done) {
     var app = express();
+    var spy = sinon.spy();
 
     app.use(client.metricsHandler);
-
-    client_mock.expects('timing').once().withArgs("app.request.404");
+    app.use(function(req, res, next) {
+      spy();
+      next();
+    });
 
     request(app.listen())
     .get('/')
     .end(function(err, res){
       if (err) return done(err);
-      client_mock.verify();
+      assert(spy.calledOnce);
       done();
     });
   });

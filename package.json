@@ -7,7 +7,6 @@
     "test": "test"
   },
   "dependencies": {
-    "mathjs": "^3.2.1",
     "request": "~2.74.0",
     "stack-trace": "~0.0.9"
   },
