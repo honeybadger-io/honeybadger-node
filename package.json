@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "request": "~2.74.0",
+    "request": "~2.79.0",
     "stack-trace": "~0.0.9"
   },
   "devDependencies": {
