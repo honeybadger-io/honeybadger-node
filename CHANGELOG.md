@@ -5,6 +5,10 @@ adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.1] - 2016-10-14
+### Fixed
+- Update request package to ~2.79.0
+
 ## [1.2.0] - 2016-10-14
 ### Changed
 - Sunset performance metrics. See
