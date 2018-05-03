@@ -7,15 +7,15 @@
     "test": "test"
   },
   "dependencies": {
-    "request": "~2.79.0",
+    "request": "~2.85.0",
     "stack-trace": "~0.0.9"
   },
   "devDependencies": {
     "express": "^4.13.4",
-    "mocha": "^2.4.5",
-    "nock": "^7.7.3",
-    "sinon": "^1.17.3",
-    "supertest": "^1.2.0"
+    "mocha": "^5.1.1",
+    "nock": "^9.2.5",
+    "sinon": "^5.0.3",
+    "supertest": "^3.0.0"
   },
   "scripts": {
     "test": "mocha"
