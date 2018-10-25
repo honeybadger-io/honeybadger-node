@@ -14,7 +14,7 @@
     "express": "^4.13.4",
     "mocha": "^5.1.1",
     "nock": "^10.0.0",
-    "sinon": "^6.0.0",
+    "sinon": "^7.1.0",
     "supertest": "^3.0.0"
   },
   "scripts": {
