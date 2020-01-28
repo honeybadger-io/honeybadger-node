@@ -124,7 +124,7 @@ There are a few ways to configure the Honeybadger module. You can use `#configur
 Note that the only configuration option you *have* to provide is `apiKey`.
 
 ```javascript
-HoneyBadger.configure({
+Honeybadger.configure({
   // The API key of your Honeybadger project. (env: HONEYBADGER_API_KEY)
   apiKey: 'your api key goes here',
 
