@@ -15,8 +15,7 @@ We made some breaking changes in 1.0, so if you currently use 0.x, you will need
 var hb = require('honeybadger');
 
 hb.configure({
-  apiKey: '[ YOUR API KEY HERE ]',
-  environment: 'production'
+  apiKey: '[ YOUR API KEY HERE ]'
 });
 
 # Change:
@@ -47,8 +46,7 @@ var Honeybadger = require('honeybadger');
 
 ```javascript
 Honeybadger.configure({
-  apiKey: '[ YOUR API KEY HERE ]',
-  environment: 'production'
+  apiKey: '[ YOUR API KEY HERE ]'
 });
 ```
 
