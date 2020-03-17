@@ -90,6 +90,8 @@ exports.handler = Honeybadger.lambdaHandler(handler);
 
 Check out our [example Lambda project](https://github.com/honeybadger-io/honeybadger-lambda-node) for a complete example.
 
+Note: [Async Handlers](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-async) are not supported by `Honeybadger.lambdaHandler`. See [this issue](https://github.com/honeybadger-io/honeybadger-node/issues/54) for status.
+
 #### Manually reporting exceptions
 
 To catch exceptions and report them manually:
@@ -335,6 +337,8 @@ function handler(event, context) {
 // Build and export the function.
 exports.handler = Honeybadger.lambdaHandler(handler);
 ```
+
+Note: [Async Handlers](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-async) are not supported by `Honeybadger.lambdaHandler`. See [this issue](https://github.com/honeybadger-io/honeybadger-node/issues/54) for status.
 
 ---
 
