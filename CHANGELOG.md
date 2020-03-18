@@ -4,8 +4,11 @@ CHANGELOG](http://keepachangelog.com/) for how to update this file. This project
 adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Fixed
+- Support async functions in lambdaHandler (#54, #82)
 
 ## [1.3.0] - 2018-06-19
+### Added
 - Add an option to report uncaught exceptions. -@aryehischechter/#31
 
 ## [1.2.1] - 2016-10-14
