@@ -6,93 +6,103 @@ var assert = require('assert'),
     Singleton = require('../lib/honeybadger');
 
 describe('Express Middleware', function () {
-  var subject, client_mock, client;
-  var error = new Error('Badgers!');
+  let subject, client_mock, client;
+  const error = new Error('Badgers!');
 
-  setup(function() {
+  beforeEach(function() {
     client = Singleton.factory({ apiKey: 'fake api key' });
     subject = client.errorHandler;
-
     client_mock = sinon.mock(client);
   });
 
-  it('calls next', function() {
-    var app = express();
-    var expected = sinon.spy();
+  it('is sane', function(done) {
+    const app = express();
 
-    app.use(function(req, res, next) {
-      throw(error);
-    });
-    app.use(subject);
-    app.use(function(err, req, res, next) {
-      expected();
+    app.get('/user', function(req, res) {
+      res.status(200).json({ name: 'john' });
     });
 
-    request(app.listen())
-    .get('/')
-    .end(function(err, res){
-      if (err) return done(err);
-      assert(expected.called);
-      done();
-    });
+    request(app)
+      .get('/user')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200, done);
   });
 
-  it('reports the error to Honeybadger', function(done) {
-    var app = express();
-
-    app.use(function(req, res, next) {
-      throw(error);
-    });
-    app.use(subject);
-
-    request(app.listen())
-    .get('/')
-    .end(function(err, res){
-      if (err) return done(err);
-      client_mock.verify();
-      done();
-    });
-  });
-
-  it('reports async errors to Honeybadger', function(done) {
-    var app = express();
+  it('reports the error to Honeybadger and calls next error handler', function(done) {
+    const app = express();
+    const expected = sinon.spy();
 
     app.use(client.requestHandler);
-    app.use(function(req, res, next) {
+
+    app.get('/', function(req, res) {
+      throw(error);
+    });
+
+    app.use(subject);
+
+    app.use(function(err, req, res, next) {
+      expected();
+      next();
+    });
+
+    client_mock.expects('notify').once().withArgs(error);
+
+    request(app)
+      .get('/')
+      .expect(500, function() {
+        client_mock.verify();
+        assert(expected.calledOnce);
+        done();
+    });
+  });
+
+  it('reports async errors to Honeybadger and calls next error handler', function(done) {
+    const app = express();
+    const expected = sinon.spy();
+
+    app.use(client.requestHandler);
+
+    app.get('/', function(req, res) {
       setTimeout(function asyncThrow() {
         throw(error);
       }, 0);
     });
+
     app.use(subject);
 
-    client_mock.expects('notify').once().withArgs(error);
-
-    request(app.listen())
-    .get('/')
-    .end(function(err, res){
-      if (err) return done(err);
-      client_mock.verify();
-      done();
-    });
-  });
-
-  it('provides a noop metricsHandler', function(done) {
-    var app = express();
-    var spy = sinon.spy();
-
-    app.use(client.metricsHandler);
-    app.use(function(req, res, next) {
-      spy();
+    app.use(function(err, req, res, next) {
+      expected();
       next();
     });
 
-    request(app.listen())
-    .get('/')
-    .end(function(err, res){
-      if (err) return done(err);
-      assert(spy.calledOnce);
-      done();
+    client_mock.expects('notify').once().withArgs(error);
+
+    request(app)
+      .get('/')
+      .expect(500, function() {
+        client_mock.verify();
+        assert(expected.calledOnce);
+        done();
+      });
+  });
+
+  it('provides a noop metricsHandler', function(done) {
+    const app = express();
+    const expected = sinon.spy();
+
+    app.use(client.metricsHandler);
+    app.use(function(req, res, next) {
+      expected();
+      next();
     });
+
+    request(app)
+      .get('/')
+      .expect(200, function() {
+        assert(expected.calledOnce);
+        done();
+      });
   });
 });
 
