@@ -1,6 +1,6 @@
 # Honeybadger for NodeJS
 
-[![Build Status](https://travis-ci.org/honeybadger-io/honeybadger-node.svg?branch=master)](https://travis-ci.org/honeybadger-io/honeybadger-node)
+![Node.js CI](https://github.com/honeybadger-io/honeybadger-node/workflows/Node.js%20CI/badge.svg)
 [![npm version](https://badge.fury.io/js/honeybadger.svg)](https://badge.fury.io/js/honeybadger)
 
 This is the Node.js module for integrating apps with the :zap: [Honeybadger Exception Notifier for JavaScript and Node](http://honeybadger.io).
