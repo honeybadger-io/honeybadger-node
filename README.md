@@ -393,6 +393,20 @@ If you're adding a new feature, please [submit an issue](https://github.com/hone
 
 Clone the repo, and then `npm install`. Now you should be able to run `npm test`.
 
+## Releasing
+
+Releasing is done with two commands: `npm version` and `npm publish`. **Both
+commands should be used with care.** The `npm publish` command publishes to NPM.
+
+To perform a full release:
+
+1. With a clean working tree, use `npm version [new version]` to bump the
+   version, commit the changes, tag the release, and push to GitHub. See `npm
+   help version` for documentation.
+
+2. To publish the release, use `npm publish`. See `npm help publish` for
+   documentation.
+
 ### License
 
 The Honeybadger gem is MIT licensed. See the [LICENSE](https://raw.github.com/honeybadger-io/honeybadger-node/master/LICENSE) file in this repository for details.

@@ -18,7 +18,11 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "preversion": "npm test",
+    "version": "scripts/update-versions.sh",
+    "postversion": "git push && git push --tags",
+    "prepublishOnly": "npm test"
   },
   "repository": {
     "type": "git",
