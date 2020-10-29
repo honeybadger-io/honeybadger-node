@@ -15,7 +15,7 @@
     "mocha": "^5.1.1",
     "nock": "^10.0.0",
     "sinon": "^9.0.1",
-    "supertest": "^5.0.0"
+    "supertest": "^6.0.0"
   },
   "scripts": {
     "test": "mocha",
