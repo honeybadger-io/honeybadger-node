@@ -1,3 +1,5 @@
+> **Note:** This project is deprecated; use the new universal [@honeybadger-io/js](https://github.com/honeybadger-io/honeybadger-js) instead. See the [blog post](https://www.honeybadger.io/blog/universal-honeybadger-js/) for more info and upgrade instructions.
+
 # Honeybadger for NodeJS
 
 ![Node.js CI](https://github.com/honeybadger-io/honeybadger-node/workflows/Node.js%20CI/badge.svg)
@@ -6,8 +8,6 @@
 This is the Node.js module for integrating apps with the :zap: [Honeybadger Exception Notifier for JavaScript and Node](http://honeybadger.io).
 
 When an uncaught exception occurs, Honeybadger will POST the relevant data to the Honeybadger service, and we'll alert you to the problem.
-
-> **Note:** This project is deprecated; use the new universal [@honeybadger-io/js](https://github.com/honeybadger-io/honeybadger-js) instead. See the [blog post](https://www.honeybadger.io/blog/universal-honeybadger-js/) for more info and upgrade instructions.
 
 ## Upgrading from 0.x
 
