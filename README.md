@@ -7,6 +7,8 @@ This is the Node.js module for integrating apps with the :zap: [Honeybadger Exce
 
 When an uncaught exception occurs, Honeybadger will POST the relevant data to the Honeybadger service, and we'll alert you to the problem.
 
+> **Note:** This project is deprecated; use the new universal [@honeybadger-io/js](https://github.com/honeybadger-io/honeybadger-js) instead. See the [blog post](https://www.honeybadger.io/blog/universal-honeybadger-js/) for more info and upgrade instructions.
+
 ## Upgrading from 0.x
 
 We made some breaking changes in 1.0, so if you currently use 0.x, you will need to update your usage. In most cases you should be able to replace the old `hb.send()` function with `hb.notify()`. Instead of configuring the client as an instance, you can require the global singleton instead:
