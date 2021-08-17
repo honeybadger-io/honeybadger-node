@@ -5,6 +5,8 @@ adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.1] - 2021-08-17
+
 ## [1.4.0] - 2020-03-19
 ### Fixed
 - Support async functions in lambdaHandler (#54, #82)
